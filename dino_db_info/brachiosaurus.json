@@ -1,0 +1,20 @@
+{
+  "id": "brachiosaurus",
+  "summary": "Among the largest animals to walk Isla Nublar. InGen's Brachiosaurus stock was used for gentle-herbivore baseline studies and public-facing habitat displays.",
+  "stats": [
+    { "label": "Period", "value": "Late Jurassic" },
+    { "label": "Diet", "value": "Herbivore" },
+    { "label": "Length", "value": "~21 m" },
+    { "label": "Height", "value": "~12 m (neck raised)" },
+    { "label": "Threat Level", "value": "Low" },
+    { "label": "Containment", "value": "BARBASOL CAN" }
+  ],
+  "facts": [
+    "Forelimbs longer than hindlimbs — distinctive high-shouldered profile.",
+    "Likely fed from upper canopy; minimal competition with low browsers.",
+    "Vocalizations recorded in the 10–20 Hz range; felt as much as heard.",
+    "Embryo viability among the highest in InGen's sauropod line."
+  ],
+  "fieldNotes": "Maintain wide clearance zones. Specimen shows calm disposition when visual contact is maintained.",
+  "modelVideo": "./dino_db_info/videos/brachiosaurus.mp4"
+}

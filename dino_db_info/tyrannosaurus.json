@@ -1,0 +1,20 @@
+{
+  "id": "tyrannosaurus",
+  "summary": "Island apex predator. Tyrannosaurus rex remains the benchmark carnivore for containment doctrine and embryo security classification.",
+  "stats": [
+    { "label": "Period", "value": "Late Cretaceous" },
+    { "label": "Diet", "value": "Carnivore" },
+    { "label": "Length", "value": "~12 m" },
+    { "label": "Bite Force", "value": "~6 t (est.)" },
+    { "label": "Threat Level", "value": "Critical" },
+    { "label": "Containment", "value": "BARBASOL CAN" }
+  ],
+  "facts": [
+    "Binocular vision — depth perception suited for ambush predation.",
+    "Femur stress analysis indicates sustained running capability.",
+    "InGen acoustic profile: low-frequency territorial roar, 120+ dB at source.",
+    "Embryo recovery authorized only under full field-team escort."
+  ],
+  "fieldNotes": "Do not engage. If visual contact occurs, freeze and await extraction coordinates.",
+  "modelVideo": "./dino_db_info/videos/tyrannosaurus.mp4"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "scorpios_rex",
+  "summary": "Classified InGen hybrid — codename Scorpios rex. Unstable genome expression; quilled integument and neurotoxic traits place it outside standard recovery protocols.",
+  "stats": [
+    { "label": "Classification", "value": "Hybrid (classified)" },
+    { "label": "Diet", "value": "Carnivore" },
+    { "label": "Length", "value": "~4–5 m" },
+    { "label": "Threat Level", "value": "Critical" },
+    { "label": "Disposition", "value": "Erratic / nocturnal" },
+    { "label": "Containment", "value": "BARBASOL CAN" }
+  ],
+  "facts": [
+    "Quills along head and forelimbs — defensive and display structures.",
+    "Reported hemolytic venom; field teams must use sealed suits.",
+    "Genome includes abelisaur and unidentified splice markers.",
+    "Subject was believed terminated; embryo recovery confirms surviving lineage."
+  ],
+  "fieldNotes": "AUTHORIZED PERSONNEL ONLY. Assume specimen is aware of tracker emissions.",
+  "modelVideo": "./dino_db_info/videos/scorpios_rex.mp4"
+}

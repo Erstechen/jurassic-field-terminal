@@ -1,0 +1,20 @@
+{
+  "id": "carcharodontosaurus",
+  "summary": "Large allosauroid carnivore — 'shark-toothed lizard.' Comparable in mass class to other island megapredators; assigned priority recovery due to genome rarity.",
+  "stats": [
+    { "label": "Period", "value": "Late Cretaceous" },
+    { "label": "Diet", "value": "Carnivore" },
+    { "label": "Length", "value": "~12–13 m" },
+    { "label": "Threat Level", "value": "High" },
+    { "label": "Range", "value": "Open savanna / scrub" },
+    { "label": "Containment", "value": "BARBASOL CAN" }
+  ],
+  "facts": [
+    "Serrated, blade-like teeth — adapted for slicing flesh from large prey.",
+    "Skull length exceeds 1.5 m in mature specimens.",
+    "May compete directly with Tyrannosaur assets for territory.",
+    "Embryo cryo-state stable; genetic drift within acceptable parameters."
+  ],
+  "fieldNotes": "Maintain minimum 200 m standoff. Track downwind — olfactory sensitivity elevated.",
+  "modelVideo": "./dino_db_info/videos/carcharodontosaurus.mp4"
+}

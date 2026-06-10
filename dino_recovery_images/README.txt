@@ -1,4 +1,4 @@
-Dinosaur recovery images — shown on the Embryo Recovered overlay and in the Dino DB holographic viewer.
+Dinosaur recovery images — shown on the Embryo Recovered overlay (and as Dino DB fallback when no turntable video exists).
 
 Place one PNG per specimen using these filenames:
 

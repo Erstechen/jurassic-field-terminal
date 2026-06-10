@@ -1,6 +1,7 @@
 let EMBRYO_DATA = {};
 let MISSION_DATA = {};
 let AUDIO_LOG_DATA = {};
+let DINO_DB_DATA = {};
 let booting = false;
 let selectedDinoId = null;
 
@@ -397,6 +398,23 @@ async function loadGameData() {
   EMBRYO_DATA = embryos;
   MISSION_DATA = missions;
   AUDIO_LOG_DATA = audioLogs;
+  await loadDinoDbData();
+}
+
+async function loadDinoDbData() {
+  const ids = Object.keys(EMBRYO_DATA);
+  const results = await Promise.all(
+    ids.map(id =>
+      fetch(`./dino_db_info/${id}.json`)
+        .then(r => (r.ok ? r.json() : null))
+        .catch(() => null)
+    )
+  );
+
+  DINO_DB_DATA = {};
+  ids.forEach((id, i) => {
+    if (results[i]) DINO_DB_DATA[id] = results[i];
+  });
 }
 
 function showScreen(screenId) {
@@ -475,17 +493,109 @@ function getDinoMeta(id) {
   return EMBRYO_DATA[id] || null;
 }
 
-function buildHologramHtml(imageSrc, altText) {
+function getDinoDbEntry(id) {
+  return DINO_DB_DATA[id] || null;
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildHologramHtml(meta, dbEntry) {
+  const videoSrc = dbEntry?.modelVideo;
+  const posterSrc = dbEntry?.modelPoster;
+  const fallbackImg = meta.image;
+  const altText = escapeHtml(meta.name);
+  const spinnerClass = videoSrc ? "holo-spinner holo-video" : "holo-spinner";
+  const posterAttr = posterSrc ? ` poster="${escapeHtml(posterSrc)}"` : "";
+
+  const modelHtml = videoSrc
+    ? `<video class="holo-model holo-model-video" src="${escapeHtml(videoSrc)}"${posterAttr}
+         muted loop playsinline autoplay></video>
+       <img class="holo-model holo-model-fallback" src="${escapeHtml(fallbackImg)}" alt="${altText}" hidden />`
+    : `<img src="${escapeHtml(fallbackImg)}" alt="${altText}" class="holo-model" />`;
+
+  const label = videoSrc
+    ? "HOLOGRAPHIC RENDER — TURNTABLE"
+    : "HOLOGRAPHIC RENDER — ROTATING";
+
   return `
     <div class="holo-stage">
       <div class="holo-platform"></div>
       <div class="holo-ring holo-ring-outer"></div>
       <div class="holo-ring holo-ring-inner"></div>
-      <div class="holo-spinner">
-        <img src="${imageSrc}" alt="${altText}" class="holo-model" />
+      <div class="${spinnerClass}">
+        ${modelHtml}
       </div>
       <div class="holo-scanlines"></div>
-      <div class="holo-label">HOLOGRAPHIC RENDER — ROTATING</div>
+      <div class="holo-label">${label}</div>
+    </div>
+  `;
+}
+
+function activateHologramVideo(container) {
+  const video = container.querySelector(".holo-model-video");
+  if (!video) return;
+
+  const fallback = container.querySelector(".holo-model-fallback");
+  const spinner = container.querySelector(".holo-spinner");
+
+  const useFallback = () => {
+    video.hidden = true;
+    if (fallback) {
+      fallback.hidden = false;
+      spinner?.classList.remove("holo-video");
+    }
+  };
+
+  video.addEventListener("error", useFallback);
+  video.play().catch(useFallback);
+}
+
+function buildDinoDetailsHtml(meta, dbEntry) {
+  const stats = dbEntry?.stats
+    ? [...dbEntry.stats]
+    : [
+        { label: "Specimen ID", value: meta.id.toUpperCase() },
+        { label: "Status", value: "RECOVERED" },
+        { label: "Containment", value: "BARBASOL CAN" }
+      ];
+
+  if (meta.audioLog && !stats.some(s => s.label === "Log Ref")) {
+    stats.push({ label: "Log Ref", value: meta.audioLog.toUpperCase() });
+  }
+
+  const statsHtml = stats.map(s => `
+    <div><span>${escapeHtml(s.label)}</span><strong>${escapeHtml(s.value)}</strong></div>
+  `).join("");
+
+  const summary = dbEntry?.summary
+    ? `<p class="dino-summary">${escapeHtml(dbEntry.summary)}</p>`
+    : "";
+
+  const facts = dbEntry?.facts?.length
+    ? `<div class="dino-facts">
+        <h5>Specimen Log</h5>
+        <ul>${dbEntry.facts.map(f => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
+      </div>`
+    : "";
+
+  const fieldNotes = dbEntry?.fieldNotes
+    ? `<p class="dino-field-notes"><span>Field Notes</span>${escapeHtml(dbEntry.fieldNotes)}</p>`
+    : "";
+
+  return `
+    <div class="dino-details">
+      <h4>${escapeHtml(meta.name)}</h4>
+      <p class="dino-species">${escapeHtml(meta.species)}</p>
+      ${summary}
+      <div class="dino-meta-grid">${statsHtml}</div>
+      ${facts}
+      ${fieldNotes}
     </div>
   `;
 }
@@ -510,6 +620,8 @@ function renderDinoDatabase() {
     return;
   }
 
+  const dbEntry = getDinoDbEntry(selectedDinoId);
+
   const selector = collected.map(id => {
     const dino = getDinoMeta(id);
     const label = dino ? dino.name : id;
@@ -519,18 +631,11 @@ function renderDinoDatabase() {
 
   el.innerHTML = `
     <div class="dino-selector">${selector}</div>
-    ${buildHologramHtml(meta.image, meta.name)}
-    <div class="dino-details">
-      <h4>${meta.name}</h4>
-      <p class="dino-species">${meta.species}</p>
-      <div class="dino-meta-grid">
-        <div><span>Specimen ID</span><strong>${meta.id.toUpperCase()}</strong></div>
-        <div><span>Status</span><strong>RECOVERED</strong></div>
-        <div><span>Containment</span><strong>BARBASOL CAN</strong></div>
-        <div><span>Log Ref</span><strong>${meta.audioLog?.toUpperCase() || "N/A"}</strong></div>
-      </div>
-    </div>
+    ${buildHologramHtml(meta, dbEntry)}
+    ${buildDinoDetailsHtml(meta, dbEntry)}
   `;
+
+  activateHologramVideo(el);
 
   el.querySelectorAll(".dino-select-btn").forEach(btn => {
     btn.addEventListener("click", () => {

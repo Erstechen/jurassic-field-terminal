@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v11";
+const CACHE_NAME = "jp-cache-v12";
 
 const CORE_ASSETS = [
   "./",
@@ -19,6 +19,32 @@ const CORE_ASSETS = [
   "./gm/gm.css",
   "./images/icon-192.png",
   "./images/icon-512.png"
+];
+
+const DINO_DB_INFO = [
+  "./dino_db_info/brachiosaurus.json",
+  "./dino_db_info/triceratops.json",
+  "./dino_db_info/spinosaurus.json",
+  "./dino_db_info/carcharodontosaurus.json",
+  "./dino_db_info/tyrannosaurus.json",
+  "./dino_db_info/scorpios_rex.json",
+  "./dino_db_info/carnotaurus.json",
+  "./dino_db_info/giganotosaurus.json",
+  "./dino_db_info/velociraptor.json",
+  "./dino_db_info/mutadon.json"
+];
+
+const DINO_DB_VIDEOS = [
+  "./dino_db_info/videos/brachiosaurus.mp4",
+  "./dino_db_info/videos/triceratops.mp4",
+  "./dino_db_info/videos/spinosaurus.mp4",
+  "./dino_db_info/videos/carcharodontosaurus.mp4",
+  "./dino_db_info/videos/tyrannosaurus.mp4",
+  "./dino_db_info/videos/scorpios_rex.mp4",
+  "./dino_db_info/videos/carnotaurus.mp4",
+  "./dino_db_info/videos/giganotosaurus.mp4",
+  "./dino_db_info/videos/velociraptor.mp4",
+  "./dino_db_info/videos/mutadon.mp4"
 ];
 
 const DINO_RECOVERY_IMAGES = [
@@ -57,7 +83,9 @@ self.addEventListener("install", event => {
     caches.open(CACHE_NAME).then(async cache => {
       await cache.addAll(CORE_ASSETS);
       await Promise.all(
-        [...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS].map(url => cache.add(url).catch(() => {}))
+        [...DINO_DB_INFO, ...DINO_DB_VIDEOS, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS].map(url =>
+          cache.add(url).catch(() => {})
+        )
       );
     })
   );

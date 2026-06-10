@@ -1,0 +1,20 @@
+{
+  "id": "giganotosaurus",
+  "summary": "One of the largest known theropods. Giganotosaurus carolinii embryos represent a high-value genetic asset with documented pack-hunting behavior in the wild.",
+  "stats": [
+    { "label": "Period", "value": "Late Cretaceous" },
+    { "label": "Diet", "value": "Carnivore" },
+    { "label": "Length", "value": "~12–13 m" },
+    { "label": "Threat Level", "value": "Critical" },
+    { "label": "Behavior", "value": "Pack coordination observed" },
+    { "label": "Containment", "value": "BARBASOL CAN" }
+  ],
+  "facts": [
+    "Skull and dentition optimized for slicing — less crush, more cleave.",
+    "Fossil evidence from Argentina supports multi-individual kills.",
+    "InGen telemetry: coordinated flanking when prey is cornered.",
+    "Embryo batch among the most genetically complete carnivore lines on file."
+  ],
+  "fieldNotes": "Assume multiple individuals in operational zone. Extract embryos before engagement.",
+  "modelVideo": "./dino_db_info/videos/giganotosaurus.mp4"
+}

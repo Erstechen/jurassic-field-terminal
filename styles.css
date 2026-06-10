@@ -193,7 +193,6 @@ button.danger {
   display: block;
   font-size: 0.85em;
   color: #888;
-  font-style: italic;
 }
 
 .tracking-grid div {
@@ -363,6 +362,10 @@ button.danger {
   animation: holo-spin 10s linear infinite;
 }
 
+.holo-spinner.holo-video {
+  animation: none;
+}
+
 .holo-model {
   width: 100%;
   height: 100%;
@@ -370,6 +373,10 @@ button.danger {
   filter: drop-shadow(0 0 14px rgba(0, 229, 192, 0.55))
           drop-shadow(0 0 6px rgba(212, 175, 55, 0.35));
   opacity: 0.92;
+}
+
+.holo-model-video {
+  background: transparent;
 }
 
 .holo-scanlines {
@@ -410,9 +417,66 @@ button.danger {
 }
 
 .dino-species {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   color: #888;
   font-style: italic;
+}
+
+.dino-summary {
+  margin: 0 0 14px;
+  color: #bbb;
+  line-height: 1.5;
+  font-size: 0.9em;
+}
+
+.dino-facts {
+  margin-top: 16px;
+  padding: 12px;
+  background: #0a0a0a;
+  border: 1px solid #222;
+}
+
+.dino-facts h5 {
+  margin: 0 0 8px;
+  color: #d4af37;
+  font-size: 0.75em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dino-facts ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #aaa;
+  font-size: 0.85em;
+  line-height: 1.55;
+}
+
+.dino-facts li {
+  margin-bottom: 6px;
+}
+
+.dino-facts li:last-child {
+  margin-bottom: 0;
+}
+
+.dino-field-notes {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid #d4af37;
+  background: #111;
+  color: #ccc;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.dino-field-notes span {
+  display: block;
+  font-size: 0.7em;
+  color: #666;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
 
 .dino-meta-grid {
