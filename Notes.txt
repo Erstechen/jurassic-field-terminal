@@ -1,0 +1,4 @@
+cd /home/amessenger/Documents/jurassic-field-terminal
+python3 -m http.server 8765
+
+http://127.0.0.1:8765

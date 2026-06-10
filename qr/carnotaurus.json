@@ -1,0 +1,7 @@
+{
+  "type": "embryo",
+  "id": "carnotaurus",
+  "name": "Toro",
+  "unlockMission": "mission_08",
+  "audioLog": "log_07"
+}

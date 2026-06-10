@@ -1,0 +1,5 @@
+{
+  "type": "event",
+  "eventId": "gps_update",
+  "gpsSignal": "signal detected"
+}

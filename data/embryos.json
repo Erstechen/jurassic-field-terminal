@@ -1,0 +1,82 @@
+{
+  "brachiosaurus": {
+    "id": "brachiosaurus",
+    "name": "Brachiosaurus",
+    "species": "Brachiosaurus altithorax",
+    "image": "./dino_recovery_images/Brachiosaurus.png",
+    "unlockMission": "mission_02",
+    "audioLog": "log_01"
+  },
+  "triceratops": {
+    "id": "triceratops",
+    "name": "Triceratops",
+    "species": "Triceratops horridus",
+    "image": "./dino_recovery_images/Triceratops.png",
+    "unlockMission": "mission_03",
+    "audioLog": "log_02"
+  },
+  "spinosaurus": {
+    "id": "spinosaurus",
+    "name": "Spinosaurus",
+    "species": "Spinosaurus aegyptiacus",
+    "image": "./dino_recovery_images/Spinosaurus.png",
+    "unlockMission": "mission_04",
+    "audioLog": "log_03"
+  },
+  "carcharodontosaurus": {
+    "id": "carcharodontosaurus",
+    "name": "Carcharodontosaurus",
+    "species": "Carcharodontosaurus saharicus",
+    "image": "./dino_recovery_images/Carcharodontosaurus.png",
+    "unlockMission": "mission_05",
+    "audioLog": "log_04"
+  },
+  "tyrannosaurus": {
+    "id": "tyrannosaurus",
+    "name": "Tyrannosaurus",
+    "species": "Tyrannosaurus rex",
+    "image": "./dino_recovery_images/Tyrannosaurus.png",
+    "unlockMission": "mission_06",
+    "audioLog": "log_05"
+  },
+  "scorpios_rex": {
+    "id": "scorpios_rex",
+    "name": "Scorpios Rex",
+    "species": "Scorpios rex",
+    "image": "./dino_recovery_images/Scorpios Rex.png",
+    "unlockMission": "mission_07",
+    "audioLog": "log_06"
+  },
+  "carnotaurus": {
+    "id": "carnotaurus",
+    "name": "Toro",
+    "species": "Carnotaurus",
+    "image": "./dino_recovery_images/Carnotaurus-Toro.png",
+    "unlockMission": "mission_08",
+    "audioLog": "log_07"
+  },
+  "giganotosaurus": {
+    "id": "giganotosaurus",
+    "name": "Giganotosaurus",
+    "species": "Giganotosaurus carolinii",
+    "image": "./dino_recovery_images/Giganotosaurus.png",
+    "unlockMission": "mission_09",
+    "audioLog": "log_08"
+  },
+  "velociraptor": {
+    "id": "velociraptor",
+    "name": "Velociraptor",
+    "species": "Velociraptor mongoliensis",
+    "image": "./dino_recovery_images/Velociraptor.png",
+    "unlockMission": "mission_10",
+    "audioLog": "log_09"
+  },
+  "mutadon": {
+    "id": "mutadon",
+    "name": "Mutadon",
+    "species": "Mutadon specimen",
+    "image": "./dino_recovery_images/Mutadon.png",
+    "unlockMission": "mission_11",
+    "audioLog": "log_10"
+  }
+}

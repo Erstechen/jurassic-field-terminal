@@ -1,0 +1,68 @@
+{
+  "log_01": {
+    "id": "log_01",
+    "title": "Site Entry Log",
+    "file": "log_01.mp3",
+    "transcript": "Field team alpha, you are cleared for embryo recovery. First target: Brachiosaurus specimen at site entry."
+  },
+  "log_02": {
+    "id": "log_02",
+    "title": "Armored Specimen",
+    "file": "log_02.mp3",
+    "transcript": "Brachiosaurus secured. Triceratops herd located — approach from downwind."
+  },
+  "log_03": {
+    "id": "log_03",
+    "title": "River Threat",
+    "file": "log_03.mp3",
+    "transcript": "Triceratops recovered. Spinosaurus signature in river basin. Avoid water crossings."
+  },
+  "log_04": {
+    "id": "log_04",
+    "title": "Ridge Tracker",
+    "file": "log_04.mp3",
+    "transcript": "Spinosaurus contained. Carcharodontosaurus movement on eastern ridge. Maintain distance."
+  },
+  "log_05": {
+    "id": "log_05",
+    "title": "Apex Warning",
+    "file": "log_05.mp3",
+    "transcript": "Carcharodontosaurus secured. Tyrannosaurus bio-signature escalating. Do not engage."
+  },
+  "log_06": {
+    "id": "log_06",
+    "title": "Hybrid Alert",
+    "file": "log_06.mp3",
+    "transcript": "Tyrannosaurus recovered. Scorpios Rex hybrid strain detected. Full containment protocol."
+  },
+  "log_07": {
+    "id": "log_07",
+    "title": "Bull Charge",
+    "file": "log_07.mp3",
+    "transcript": "Scorpios Rex stabilized. Carnotaurus designate Toro near southern fence. Stay mobile."
+  },
+  "log_08": {
+    "id": "log_08",
+    "title": "Giant Sweep",
+    "file": "log_08.mp3",
+    "transcript": "Toro secured. Giganotosaurus tracking active. Largest predator in sector."
+  },
+  "log_09": {
+    "id": "log_09",
+    "title": "Raptor Activity",
+    "file": "log_09.mp3",
+    "transcript": "Giganotosaurus recovered. Velociraptor pack signatures increasing. Do not split up."
+  },
+  "log_10": {
+    "id": "log_10",
+    "title": "Final Recovery",
+    "file": "log_10.mp3",
+    "transcript": "Velociraptor pack contained. Mutadon specimen at extraction point. Complete recovery."
+  },
+  "alarm": {
+    "id": "alarm",
+    "title": "System Alarm",
+    "file": "alarm.mp3",
+    "transcript": "ALERT: Perimeter breach detected. All personnel report to secure zones."
+  }
+}

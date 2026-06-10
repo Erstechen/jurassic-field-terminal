@@ -1,0 +1,5 @@
+{
+  "type": "event",
+  "eventId": "perimeter_alarm",
+  "audio": "alarm.mp3"
+}

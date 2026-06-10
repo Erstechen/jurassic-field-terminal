@@ -1,0 +1,7 @@
+{
+  "type": "embryo",
+  "id": "spinosaurus",
+  "name": "Spinosaurus",
+  "unlockMission": "mission_04",
+  "audioLog": "log_03"
+}

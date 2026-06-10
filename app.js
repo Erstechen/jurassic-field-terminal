@@ -1,0 +1,781 @@
+let EMBRYO_DATA = {};
+let MISSION_DATA = {};
+let AUDIO_LOG_DATA = {};
+let booting = false;
+let selectedDinoId = null;
+
+const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
+
+const BOOT_STATUS_STEPS = [
+  { at: 0, msg: "Loading cryo recovery modules..." },
+  { at: 22, msg: "Syncing embryo database..." },
+  { at: 45, msg: "Establishing mission protocols..." },
+  { at: 68, msg: "Calibrating Barbasol vault..." },
+  { at: 88, msg: "Bringing systems online..." }
+];
+
+// Audio volume levels (0.0 – 1.0) — adjust each sound independently
+const AUDIO_CONFIG = {
+  // UI sound effects
+  typewriter: { file: "sfx_typewriter.mp3", volume: 0.35 },
+  flicker:    { file: "sfx_flicker.mp3",    volume: 0.35 },
+  button:     { file: "sfx_button.mp3",     volume: 0.45 },
+  loading:    { file: "sfx_loading.mp3",    volume: 1.0  },
+
+  // Story & event audio
+  alarm:      { file: "alarm.mp3",          volume: 0.8  },
+  log_01:     { file: "log_01.mp3",         volume: 0.7  },
+  log_02:     { file: "log_02.mp3",         volume: 0.7  },
+  log_03:     { file: "log_03.mp3",         volume: 0.7  },
+  log_04:     { file: "log_04.mp3",         volume: 0.7  },
+  log_05:     { file: "log_05.mp3",         volume: 0.7  },
+  log_06:     { file: "log_06.mp3",         volume: 0.7  },
+  log_07:     { file: "log_07.mp3",         volume: 0.7  },
+  log_08:     { file: "log_08.mp3",         volume: 0.7  },
+  log_09:     { file: "log_09.mp3",         volume: 0.7  },
+  log_10:     { file: "log_10.mp3",         volume: 0.7  }
+};
+
+const AUDIO_BY_FILE = Object.fromEntries(
+  Object.values(AUDIO_CONFIG).map(entry => [entry.file, entry.volume])
+);
+
+const UI_SFX_KEYS = ["typewriter", "flicker", "button", "loading"];
+
+let audioCtx = null;
+let loadingSource = null;
+let audioReady = false;
+let audioUnlocked = false;
+const audioBuffers = {};
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getAudioVolume(file, fallback = 0.7) {
+  return AUDIO_BY_FILE[file] ?? fallback;
+}
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+async function ensureAudioRunning() {
+  const ctx = getAudioContext();
+  if (ctx.state === "suspended") {
+    await ctx.resume();
+  }
+}
+
+async function loadAudioBuffer(file) {
+  if (audioBuffers[file]) return audioBuffers[file];
+
+  try {
+    const response = await fetch(`./audio/${file}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.arrayBuffer();
+    audioBuffers[file] = await getAudioContext().decodeAudioData(data);
+    return audioBuffers[file];
+  } catch (err) {
+    console.warn(`Failed to load audio: ${file}`, err);
+    return null;
+  }
+}
+
+async function initAudioSystem() {
+  if (audioReady) return;
+
+  await Promise.all(
+    UI_SFX_KEYS.map(key => loadAudioBuffer(AUDIO_CONFIG[key].file))
+  );
+
+  audioReady = true;
+}
+
+async function warmUpAudio() {
+  await initAudioSystem();
+  if (audioUnlocked) return;
+
+  await ensureAudioRunning();
+  audioUnlocked = true;
+}
+
+function playBuffer(file, volume, { loop = false } = {}) {
+  const buffer = audioBuffers[file];
+  if (!buffer) return null;
+
+  const ctx = getAudioContext();
+  if (ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+
+  const source = ctx.createBufferSource();
+  const gain = ctx.createGain();
+  source.buffer = buffer;
+  source.loop = loop;
+  gain.gain.value = volume;
+  source.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(0);
+  return source;
+}
+
+function stopLoadingSound() {
+  if (!loadingSource) return;
+  try {
+    loadingSource.stop();
+  } catch (err) {
+    // already stopped
+  }
+  loadingSource = null;
+}
+
+function playSfx(key, { loop = false, volume } = {}) {
+  const config = AUDIO_CONFIG[key];
+  if (!config) return null;
+
+  const vol = volume ?? config.volume;
+
+  if (key === "loading" && loop) {
+    stopLoadingSound();
+    loadingSource = playBuffer(config.file, vol, { loop: true });
+    return loadingSource;
+  }
+
+  playBuffer(config.file, vol);
+  return null;
+}
+
+function playTypewriterSfx() {
+  playSfx("typewriter");
+}
+
+function typewriter(element, text, charDelay = 18) {
+  return new Promise(resolve => {
+    element.classList.remove("init-hidden");
+    element.textContent = "";
+    element.classList.add("typing");
+
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i >= text.length) {
+        clearInterval(timer);
+        element.classList.remove("typing");
+        resolve();
+        return;
+      }
+
+      const char = text[i];
+      if (char !== " " && char !== "\n") {
+        playTypewriterSfx();
+      }
+      element.textContent += char;
+      i += 1;
+    }, charDelay);
+  });
+}
+
+const FLICKER_DURATIONS = { normal: 750, fast: 110 };
+const NAV_STAGGER_MS = 300;
+
+function finishFlicker(element, flickerClass) {
+  element.classList.remove(flickerClass);
+  element.classList.add("revealed");
+}
+
+function flickerReveal(element, { fast = false, playSound = true } = {}) {
+  return new Promise(resolve => {
+    const flickerClass = fast ? "reveal-flicker-fast" : "reveal-flicker";
+    const duration = fast ? FLICKER_DURATIONS.fast : FLICKER_DURATIONS.normal;
+
+    if (playSound) {
+      playSfx("flicker");
+    }
+
+    element.classList.remove("init-hidden");
+    element.classList.add(flickerClass);
+
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      finishFlicker(element, flickerClass);
+      resolve();
+    };
+
+    element.addEventListener("animationend", done, { once: true });
+    setTimeout(done, duration + 20);
+  });
+}
+
+function revealNavButtons(navButtons) {
+  const duration = FLICKER_DURATIONS.fast;
+
+  navButtons.forEach((btn, index) => {
+    setTimeout(() => {
+      playSfx("flicker");
+      btn.classList.remove("init-hidden");
+      btn.classList.add("reveal-flicker-fast");
+      setTimeout(() => finishFlicker(btn, "reveal-flicker-fast"), duration);
+    }, index * NAV_STAGGER_MS);
+  });
+
+  // Next init step starts once the last button begins — not when all finish
+  return delay((navButtons.length - 1) * NAV_STAGGER_MS + 600);
+}
+
+function resetInitTargets() {
+  document.querySelectorAll(".init-target").forEach(el => {
+    el.classList.add("init-hidden");
+    el.classList.remove("revealed", "reveal-flicker", "reveal-flicker-fast", "typing", "cursor-blink");
+  });
+
+  document.getElementById("dashboard-title").textContent = "";
+  document.getElementById("status").textContent = "";
+  document.getElementById("mission-body").textContent = "";
+}
+
+async function blinkCursor(element, times = 3) {
+  element.classList.add("cursor-blink");
+  await delay(times * 700);
+  element.classList.remove("cursor-blink");
+}
+
+function animateBootProgress(duration = 3000) {
+  return new Promise(resolve => {
+    const fill = document.getElementById("boot-loader-fill");
+    const percentEl = document.getElementById("boot-loader-percent");
+    const statusEl = document.getElementById("boot-loader-status");
+    const start = performance.now();
+    let lastStep = -1;
+
+    playSfx("loading", { loop: true });
+
+    function frame(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const pct = Math.floor(progress * 100);
+
+      fill.style.width = `${pct}%`;
+      percentEl.textContent = `${pct}%`;
+
+      let step = BOOT_STATUS_STEPS[0];
+      for (const candidate of BOOT_STATUS_STEPS) {
+        if (pct >= candidate.at) step = candidate;
+      }
+
+      const stepIndex = BOOT_STATUS_STEPS.indexOf(step);
+      if (stepIndex !== lastStep) {
+        lastStep = stepIndex;
+        statusEl.textContent = step.msg;
+        statusEl.classList.remove("status-flicker");
+        void statusEl.offsetWidth;
+        statusEl.classList.add("status-flicker");
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        statusEl.textContent = "Boot sequence complete.";
+        stopLoadingSound();
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(frame);
+  });
+}
+
+function getDashboardMissionContent() {
+  const activeMission = getActiveMission();
+
+  if (!activeMission) {
+    return {
+      title: "All missions complete.",
+      description: "Awaiting extraction protocol.",
+      objective: ""
+    };
+  }
+
+  return {
+    title: activeMission.title,
+    description: activeMission.description,
+    objective: `Objective: ${activeMission.objective}`
+  };
+}
+
+async function runDashboardReveal() {
+  resetInitTargets();
+
+  const status = document.getElementById("status");
+  const title = document.getElementById("dashboard-title");
+  const headerLine = document.getElementById("header-line");
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const missionPanel = document.getElementById("mission-panel");
+  const missionBody = document.getElementById("mission-body");
+  const qrPanel = document.getElementById("qr-panel");
+
+  // 1. "System Online" visible with blinking cursor (3 blinks)
+  status.classList.remove("init-hidden");
+  status.textContent = "System Online";
+  await blinkCursor(status, 3);
+
+  // 2. Typewriter dashboard title
+  await typewriter(title, "FIELD OPERATIONS DASHBOARD", 40);
+
+  // 3. Flicker reveal header line
+  await flickerReveal(headerLine);
+
+  // 4. Replace status text with embryo count via typewriter
+  status.textContent = "";
+  const embryoStatus = `EMBRYOS: ${GAME_STATE.player.embryosCollected.length}/10`;
+  await typewriter(status, embryoStatus, 40);
+
+  // 5. Flicker reveal nav buttons left to right (overlapping, not sequential)
+  await revealNavButtons(navButtons);
+
+  // 6. Flicker reveal mission panel (heading + frame; body stays hidden)
+  await flickerReveal(missionPanel);
+
+  // 7. Typewriter mission body text
+  const content = getDashboardMissionContent();
+  const missionText = [content.title, content.description, content.objective]
+    .filter(Boolean)
+    .join("\n");
+  await typewriter(missionBody, missionText, 40);
+
+  // 8. Flicker reveal remaining page content
+  await flickerReveal(qrPanel);
+}
+
+async function startGame() {
+  if (booting) return;
+  await warmUpAudio();
+  booting = true;
+
+  const initBtn = document.getElementById("init-btn");
+  initBtn.disabled = true;
+  initBtn.textContent = "INITIALIZING...";
+
+  document.getElementById("boot-screen").classList.remove("active");
+  document.getElementById("boot-screen").classList.add("hidden");
+
+  const mainScreen = document.getElementById("main-screen");
+  mainScreen.classList.remove("hidden");
+  mainScreen.classList.add("active", "booting");
+
+  showScreen("dashboard");
+
+  const loader = document.getElementById("boot-loader");
+  loader.classList.remove("hidden", "loader-exit");
+
+  await animateBootProgress();
+
+  loader.classList.add("loader-exit");
+  await delay(500);
+  loader.classList.add("hidden");
+
+  await runDashboardReveal();
+
+  mainScreen.classList.remove("booting");
+  mainScreen.classList.add("boot-complete");
+  booting = false;
+
+  render();
+}
+
+async function loadGameData() {
+  const [embryos, missions, audioLogs] = await Promise.all([
+    fetch("./data/embryos.json").then(r => r.json()),
+    fetch("./data/missions.json").then(r => r.json()),
+    fetch("./data/audioLogs.json").then(r => r.json())
+  ]);
+
+  EMBRYO_DATA = embryos;
+  MISSION_DATA = missions;
+  AUDIO_LOG_DATA = audioLogs;
+}
+
+function showScreen(screenId) {
+  document.querySelectorAll(".view").forEach(view => {
+    view.classList.toggle("hidden", view.id !== `view-${screenId}`);
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.screen === screenId);
+  });
+}
+
+function render() {
+  renderDashboard();
+  renderMissionView();
+  renderEmbryoVault();
+  renderDinoDatabase();
+  renderTrackingConsole();
+}
+
+function renderDashboard() {
+  const mainScreen = document.getElementById("main-screen");
+  if (!mainScreen.classList.contains("boot-complete")) return;
+
+  const content = getDashboardMissionContent();
+  const missionText = [content.title, content.description, content.objective]
+    .filter(Boolean)
+    .join("\n");
+
+  document.getElementById("mission-body").textContent = missionText;
+  document.getElementById("dashboard-title").textContent = "FIELD OPERATIONS DASHBOARD";
+  document.getElementById("status").textContent =
+    `EMBRYOS: ${GAME_STATE.player.embryosCollected.length}/10`;
+}
+
+function renderMissionView() {
+  const el = document.getElementById("mission-list");
+  const entries = Object.values(MISSION_DATA);
+
+  if (!entries.length) {
+    el.innerHTML = "<i>Loading mission data...</i>";
+    return;
+  }
+
+  el.innerHTML = entries.map(mission => {
+    const status = GAME_STATE.missions[mission.id] || "locked";
+    return `
+      <div class="mission-item status-${status}">
+        <strong>${mission.title}</strong>
+        <span class="badge">${status.toUpperCase()}</span>
+        <p>${mission.description}</p>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderEmbryoVault() {
+  const el = document.getElementById("embryos");
+  const ids = Object.keys(GAME_STATE.embryos);
+
+  if (!ids.length) {
+    el.innerHTML = "<i>No embryo data loaded</i>";
+    return;
+  }
+
+  el.innerHTML = ids.map(id => {
+    const status = GAME_STATE.embryos[id];
+    const meta = EMBRYO_DATA[id];
+    const name = meta ? meta.name : id;
+    const icon = status === "collected" ? "✔" : status === "locked" ? "○" : "◌";
+    return `<div class="embryo-slot ${status}">${icon} ${name}</div>`;
+  }).join("");
+}
+
+function getDinoMeta(id) {
+  return EMBRYO_DATA[id] || null;
+}
+
+function buildHologramHtml(imageSrc, altText) {
+  return `
+    <div class="holo-stage">
+      <div class="holo-platform"></div>
+      <div class="holo-ring holo-ring-outer"></div>
+      <div class="holo-ring holo-ring-inner"></div>
+      <div class="holo-spinner">
+        <img src="${imageSrc}" alt="${altText}" class="holo-model" />
+      </div>
+      <div class="holo-scanlines"></div>
+      <div class="holo-label">HOLOGRAPHIC RENDER — ROTATING</div>
+    </div>
+  `;
+}
+
+function renderDinoDatabase() {
+  const el = document.getElementById("dino-database");
+  const collected = GAME_STATE.player.embryosCollected;
+
+  if (!collected.length) {
+    selectedDinoId = null;
+    el.innerHTML = "<p class=\"dino-empty\">No specimens logged. Recover embryos to populate database.</p>";
+    return;
+  }
+
+  if (!selectedDinoId || !collected.includes(selectedDinoId)) {
+    selectedDinoId = collected[collected.length - 1];
+  }
+
+  const meta = getDinoMeta(selectedDinoId);
+  if (!meta) {
+    el.innerHTML = "<p class=\"dino-empty\">Specimen data unavailable.</p>";
+    return;
+  }
+
+  const selector = collected.map(id => {
+    const dino = getDinoMeta(id);
+    const label = dino ? dino.name : id;
+    const active = id === selectedDinoId ? " active" : "";
+    return `<button type="button" class="dino-select-btn${active}" data-id="${id}">${label}</button>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="dino-selector">${selector}</div>
+    ${buildHologramHtml(meta.image, meta.name)}
+    <div class="dino-details">
+      <h4>${meta.name}</h4>
+      <p class="dino-species">${meta.species}</p>
+      <div class="dino-meta-grid">
+        <div><span>Specimen ID</span><strong>${meta.id.toUpperCase()}</strong></div>
+        <div><span>Status</span><strong>RECOVERED</strong></div>
+        <div><span>Containment</span><strong>BARBASOL CAN</strong></div>
+        <div><span>Log Ref</span><strong>${meta.audioLog?.toUpperCase() || "N/A"}</strong></div>
+      </div>
+    </div>
+  `;
+
+  el.querySelectorAll(".dino-select-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedDinoId = btn.dataset.id;
+      renderDinoDatabase();
+    });
+  });
+}
+
+function renderTrackingConsole() {
+  const signal = GAME_STATE.systems.gpsSignal;
+  const tracking = GAME_STATE.systems.trackingEnabled;
+  const motion = GAME_STATE.systems.motionTrackerEnabled;
+
+  document.getElementById("gps-signal").textContent = signal.toUpperCase();
+  document.getElementById("tracking-status").textContent = tracking ? "ENABLED" : "DISABLED";
+  document.getElementById("motion-status").textContent = motion ? "ACTIVE" : "STANDBY";
+}
+
+function getActiveMission() {
+  const activeId = Object.keys(GAME_STATE.missions).find(
+    id => GAME_STATE.missions[id] === "active"
+  );
+  return activeId ? MISSION_DATA[activeId] : null;
+}
+
+function parseQRCode(raw) {
+  return JSON.parse(raw.trim());
+}
+
+window.onQRCodeScanned = function onQRCodeScanned(raw) {
+  try {
+    handleQR(parseQRCode(raw));
+  } catch (err) {
+    showEventOverlay("INVALID QR", "Code does not contain valid mission data.");
+  }
+};
+
+function handleQR(payload) {
+  console.log("STATE BEFORE:", structuredClone(GAME_STATE));
+  console.log("QR RECEIVED:", payload);
+
+  if (!payload || !payload.type) {
+    showEventOverlay("INVALID QR", "Payload missing type field.");
+    return;
+  }
+
+  switch (payload.type) {
+    case "embryo":
+      collectEmbryo(payload.id, payload);
+      break;
+    case "event":
+      handleEvent(payload);
+      break;
+    default:
+      showEventOverlay("UNKNOWN QR", `Unsupported type: ${payload.type}`);
+  }
+
+  saveState(GAME_STATE);
+  render();
+  console.log("STATE AFTER:", structuredClone(GAME_STATE));
+}
+
+function collectEmbryo(id, payload) {
+  if (!id || GAME_STATE.embryos[id] === undefined) {
+    showEventOverlay("INVALID SPECIMEN", `Unknown embryo: ${id}`);
+    return;
+  }
+
+  if (GAME_STATE.embryos[id] === "collected") {
+    showEventOverlay("DUPLICATE SCAN", `${payload?.name || id} already recovered.`);
+    return;
+  }
+
+  GAME_STATE.embryos[id] = "collected";
+  GAME_STATE.player.embryosCollected.push(id);
+  selectedDinoId = id;
+
+  const name = payload?.name || EMBRYO_DATA[id]?.name || id;
+
+  if (payload?.audioLog) {
+    const log = AUDIO_LOG_DATA[payload.audioLog];
+    if (log) playAudio(log.file);
+  }
+
+  const meta = getDinoMeta(id);
+  showEventOverlay(
+    "EMBRYO RECOVERED",
+    `${name} secured in Barbasol can.`,
+    { image: meta?.image, variant: "success" }
+  );
+
+  if (payload?.unlockMission) {
+    unlockMission(payload.unlockMission);
+  }
+}
+
+function unlockMission(id) {
+  if (!MISSION_DATA[id]) {
+    console.warn("Unknown mission:", id);
+    return;
+  }
+
+  Object.keys(GAME_STATE.missions).forEach(missionId => {
+    if (GAME_STATE.missions[missionId] === "active") {
+      GAME_STATE.missions[missionId] = "complete";
+    }
+  });
+
+  GAME_STATE.missions[id] = "active";
+  console.log("Mission unlocked:", id);
+}
+
+function handleEvent(payload) {
+  if (payload.eventId === "raptor_breach") {
+    triggerRaptorBreach();
+    return;
+  }
+
+  if (payload.eventId === "gps_update" && payload.gpsSignal) {
+    updateSignal(payload.gpsSignal);
+    showEventOverlay("GPS UPDATE", `Signal status: ${payload.gpsSignal}`);
+    return;
+  }
+
+  if (payload.audio) {
+    playAudio(payload.audio);
+  }
+
+  showEventOverlay("EVENT TRIGGERED", payload.eventId || "Unknown event");
+}
+
+function triggerRaptorBreach() {
+  playAudio("alarm.mp3");
+  GAME_STATE.systems.trackingEnabled = true;
+  GAME_STATE.systems.motionTrackerEnabled = true;
+  updateSignal("target nearby");
+  showEventOverlay("RAPTOR BREACH", "Perimeter compromised. Motion tracker activated.");
+}
+
+function playAudio(file) {
+  if (!file) return;
+
+  const volume = getAudioVolume(file);
+
+  loadAudioBuffer(file).then(buffer => {
+    if (buffer) playBuffer(file, volume);
+  });
+}
+
+function setupButtonSounds() {
+  document.addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button || button.disabled) return;
+    playSfx("button");
+  }, true);
+}
+
+function updateSignal(level) {
+  if (!GPS_SIGNALS.includes(level)) {
+    console.warn("Invalid GPS signal level:", level);
+    return;
+  }
+
+  GAME_STATE.systems.gpsSignal = level;
+  GAME_STATE.systems.trackingEnabled = level !== "signal lost";
+  console.log("GPS signal updated:", level);
+}
+
+function showEventOverlay(title, message, { image = null, variant = "alert" } = {}) {
+  const overlay = document.getElementById("event-overlay");
+  const content = document.getElementById("overlay-content");
+  const imageWrap = document.getElementById("event-image-wrap");
+  const imageEl = document.getElementById("event-image");
+
+  document.getElementById("event-title").textContent = title;
+  document.getElementById("event-message").textContent = message;
+
+  content.classList.remove("overlay-success", "overlay-alert");
+  content.classList.add(variant === "success" ? "overlay-success" : "overlay-alert");
+
+  if (image) {
+    imageEl.src = image;
+    imageEl.alt = title;
+    imageWrap.classList.remove("hidden");
+  } else {
+    imageEl.removeAttribute("src");
+    imageWrap.classList.add("hidden");
+  }
+
+  overlay.classList.remove("hidden");
+}
+
+function hideEventOverlay() {
+  document.getElementById("event-overlay").classList.add("hidden");
+}
+
+window.processQRInput = function processQRInput() {
+  const input = document.getElementById("qrInput").value.trim();
+
+  try {
+    handleQR(parseQRCode(input));
+    document.getElementById("qrInput").value = "";
+  } catch (err) {
+    showEventOverlay("INVALID QR", "Could not parse JSON payload.");
+  }
+};
+
+window.resetGame = function resetGame() {
+  if (!confirm("Reset all progress? This cannot be undone.")) return;
+  GAME_STATE = resetState();
+  render();
+};
+
+window.addEventListener("storage", event => {
+  if (event.key !== "jp_gm_command" || !event.newValue) return;
+
+  try {
+    handleQR(JSON.parse(event.newValue));
+    localStorage.removeItem("jp_gm_command");
+  } catch (err) {
+    console.warn("Invalid GM command:", err);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  initAudioSystem().catch(() => {});
+  document.getElementById("init-btn").addEventListener("pointerdown", () => {
+    warmUpAudio().catch(() => {});
+  }, { once: true });
+  document.getElementById("init-btn").addEventListener("click", startGame);
+  setupButtonSounds();
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => showScreen(btn.dataset.screen));
+  });
+
+  document.getElementById("dismiss-overlay").addEventListener("click", hideEventOverlay);
+
+  await loadGameData();
+  render();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(err => {
+      console.warn("Service worker registration failed:", err);
+    });
+  }
+});

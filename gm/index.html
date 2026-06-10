@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InGen Game Master Console</title>
+  <link rel="stylesheet" href="gm.css">
+</head>
+<body>
+  <header>
+    <h1>GAME MASTER CONSOLE</h1>
+    <p>Remote event control — commands sync via localStorage when devices share origin.</p>
+  </header>
+
+  <section class="panel">
+    <h2>Event Triggers</h2>
+    <button onclick="triggerRaptorBreach()">Raptor Breach</button>
+    <button onclick="sendEvent('perimeter_alarm', 'alarm.mp3')">Perimeter Alarm</button>
+  </section>
+
+  <section class="panel">
+    <h2>Embryo Control</h2>
+    <select id="embryo-select">
+      <option value="brachiosaurus">Brachiosaurus</option>
+      <option value="triceratops">Triceratops</option>
+      <option value="spinosaurus">Spinosaurus</option>
+      <option value="carcharodontosaurus">Carcharodontosaurus</option>
+      <option value="tyrannosaurus">Tyrannosaurus</option>
+      <option value="scorpios_rex">Scorpios Rex</option>
+      <option value="carnotaurus">Toro (Carnotaurus)</option>
+      <option value="giganotosaurus">Giganotosaurus</option>
+      <option value="velociraptor">Velociraptor</option>
+      <option value="mutadon">Mutadon</option>
+    </select>
+    <button onclick="unlockEmbryo()">Force Unlock Embryo</button>
+  </section>
+
+  <section class="panel">
+    <h2>GPS Simulation</h2>
+    <button onclick="setGPSSignal('signal lost')">Signal Lost</button>
+    <button onclick="setGPSSignal('signal detected')">Signal Detected</button>
+    <button onclick="setGPSSignal('target nearby')">Target Nearby</button>
+  </section>
+
+  <section class="panel">
+    <h2>QR Payload Output</h2>
+    <p class="hint">Display this JSON as a QR code for the player to scan.</p>
+    <textarea id="qr-output" readonly></textarea>
+    <button onclick="copyQR()">Copy Payload</button>
+  </section>
+
+  <script src="gm.js"></script>
+</body>
+</html>
