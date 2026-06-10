@@ -1,20 +1,37 @@
 {
   "id": "mutadon",
-  "summary": "Classified hybrid specimen — Mutadon. Late-stage InGen program asset with chimeric traits across multiple theropod and amphibian gene donors.",
+  "summary": "Classified hybrid specimen \u2014 Mutadon. Late-stage InGen program asset with chimeric traits across multiple theropod and amphibian gene donors.",
   "stats": [
-    { "label": "Classification", "value": "Hybrid (classified)" },
-    { "label": "Diet", "value": "Carnivore" },
-    { "label": "Length", "value": "~6–8 m (variable)" },
-    { "label": "Threat Level", "value": "Critical" },
-    { "label": "Genome Stability", "value": "Unstable" },
-    { "label": "Containment", "value": "BARBASOL CAN" }
+    {
+      "label": "Classification",
+      "value": "Hybrid (classified)"
+    },
+    {
+      "label": "Diet",
+      "value": "Carnivore"
+    },
+    {
+      "label": "Length",
+      "value": "~6\u20138 m (variable)"
+    },
+    {
+      "label": "Threat Level",
+      "value": "Critical"
+    },
+    {
+      "label": "Genome Stability",
+      "value": "Unstable"
+    },
+    {
+      "label": "Containment",
+      "value": "BARBASOL CAN"
+    }
   ],
   "facts": [
-    "Morphology may shift between growth stages — phenotype not fixed.",
+    "Morphology may shift between growth stages \u2014 phenotype not fixed.",
     "Enhanced regenerative markers detected in tissue samples.",
     "Final embryo in the recovery sequence; extraction triggers mission closeout.",
     "Location data restricted to authorized field terminal operators."
   ],
-  "fieldNotes": "Final specimen. Complete recovery before initiating island extraction protocol.",
-  "modelVideo": "./dino_db_info/videos/mutadon.mp4"
+  "fieldNotes": "Final specimen. Complete recovery before initiating island extraction protocol."
 }

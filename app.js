@@ -505,55 +505,32 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;");
 }
 
-function buildHologramHtml(meta, dbEntry) {
-  const videoSrc = dbEntry?.modelVideo;
-  const posterSrc = dbEntry?.modelPoster;
-  const fallbackImg = meta.image;
+function buildHologramHtml(meta) {
+  const src = escapeHtml(meta.image);
   const altText = escapeHtml(meta.name);
-  const spinnerClass = videoSrc ? "holo-spinner holo-video" : "holo-spinner";
-  const posterAttr = posterSrc ? ` poster="${escapeHtml(posterSrc)}"` : "";
-
-  const modelHtml = videoSrc
-    ? `<video class="holo-model holo-model-video" src="${escapeHtml(videoSrc)}"${posterAttr}
-         muted loop playsinline autoplay></video>
-       <img class="holo-model holo-model-fallback" src="${escapeHtml(fallbackImg)}" alt="${altText}" hidden />`
-    : `<img src="${escapeHtml(fallbackImg)}" alt="${altText}" class="holo-model" />`;
-
-  const label = videoSrc
-    ? "HOLOGRAPHIC RENDER — TURNTABLE"
-    : "HOLOGRAPHIC RENDER — ROTATING";
 
   return `
     <div class="holo-stage">
       <div class="holo-platform"></div>
       <div class="holo-ring holo-ring-outer"></div>
       <div class="holo-ring holo-ring-inner"></div>
-      <div class="${spinnerClass}">
-        ${modelHtml}
+      <div class="holo-spinner">
+        <div class="holo-model-wrap">
+          <div class="holo-glow" aria-hidden="true"></div>
+          <img src="${src}" alt="${altText}" class="holo-model" />
+          <img src="${src}" alt="" class="holo-model holo-chroma holo-chroma-c" aria-hidden="true" />
+          <img src="${src}" alt="" class="holo-model holo-chroma holo-chroma-m" aria-hidden="true" />
+          <div class="holo-shimmer" aria-hidden="true"></div>
+        </div>
+        <div class="holo-reflection" aria-hidden="true">
+          <img src="${src}" alt="" class="holo-reflection-img" />
+        </div>
       </div>
+      <div class="holo-vignette" aria-hidden="true"></div>
       <div class="holo-scanlines"></div>
-      <div class="holo-label">${label}</div>
+      <div class="holo-label">HOLOGRAPHIC RENDER — ROTATING</div>
     </div>
   `;
-}
-
-function activateHologramVideo(container) {
-  const video = container.querySelector(".holo-model-video");
-  if (!video) return;
-
-  const fallback = container.querySelector(".holo-model-fallback");
-  const spinner = container.querySelector(".holo-spinner");
-
-  const useFallback = () => {
-    video.hidden = true;
-    if (fallback) {
-      fallback.hidden = false;
-      spinner?.classList.remove("holo-video");
-    }
-  };
-
-  video.addEventListener("error", useFallback);
-  video.play().catch(useFallback);
 }
 
 function buildDinoDetailsHtml(meta, dbEntry) {
@@ -631,11 +608,9 @@ function renderDinoDatabase() {
 
   el.innerHTML = `
     <div class="dino-selector">${selector}</div>
-    ${buildHologramHtml(meta, dbEntry)}
+    ${buildHologramHtml(meta)}
     ${buildDinoDetailsHtml(meta, dbEntry)}
   `;
-
-  activateHologramVideo(el);
 
   el.querySelectorAll(".dino-select-btn").forEach(btn => {
     btn.addEventListener("click", () => {

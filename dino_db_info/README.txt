@@ -5,7 +5,7 @@ Dino DB specimen files — one JSON per dinosaur (filename matches embryo id).
   spinosaurus.json
   ...
 
-Each file drives the facts panel on the Dino DB screen. Optional turntable videos
-live in dino_db_info/videos/ (see videos/README.txt).
+Each file drives the facts panel on the Dino DB screen.
 
-Recovery overlay art (static PNG) stays in dino_recovery_images/ — separate from DB holograms.
+Holographic viewer art uses the recovery PNGs in dino_recovery_images/ (same as the
+Recovered overlay).

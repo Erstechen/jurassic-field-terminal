@@ -2,19 +2,36 @@
   "id": "velociraptor",
   "summary": "Highly intelligent pack hunter. InGen's Velociraptor assets remain the primary security concern for embryo field operations and perimeter integrity.",
   "stats": [
-    { "label": "Period", "value": "Late Cretaceous" },
-    { "label": "Diet", "value": "Carnivore" },
-    { "label": "Length", "value": "~2 m" },
-    { "label": "Threat Level", "value": "Critical (pack)" },
-    { "label": "Intelligence", "value": "Elevated" },
-    { "label": "Containment", "value": "BARBASOL CAN" }
+    {
+      "label": "Period",
+      "value": "Late Cretaceous"
+    },
+    {
+      "label": "Diet",
+      "value": "Carnivore"
+    },
+    {
+      "label": "Length",
+      "value": "~2 m"
+    },
+    {
+      "label": "Threat Level",
+      "value": "Critical (pack)"
+    },
+    {
+      "label": "Intelligence",
+      "value": "Elevated"
+    },
+    {
+      "label": "Containment",
+      "value": "BARBASOL CAN"
+    }
   ],
   "facts": [
-    "Sickle claw on second toe — primary slashing weapon.",
+    "Sickle claw on second toe \u2014 primary slashing weapon.",
     "Pack coordination includes flanking, distraction, and door testing.",
     "Feathered integument confirmed in InGen phenotype records.",
     "Problem-solving observed: latch manipulation, trap recognition."
   ],
-  "fieldNotes": "Never assume a single individual. Count pack members before committing to a route.",
-  "modelVideo": "./dino_db_info/videos/velociraptor.mp4"
+  "fieldNotes": "Never assume a single individual. Count pack members before committing to a route."
 }

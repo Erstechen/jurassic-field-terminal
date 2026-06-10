@@ -2,19 +2,36 @@
   "id": "triceratops",
   "summary": "Heavily armored ceratopsian and a cornerstone of InGen's herbivore recovery program. Frill and horns provide species identification at range.",
   "stats": [
-    { "label": "Period", "value": "Late Cretaceous" },
-    { "label": "Diet", "value": "Herbivore" },
-    { "label": "Length", "value": "~9 m" },
-    { "label": "Mass", "value": "~6–12 t" },
-    { "label": "Threat Level", "value": "Moderate (defensive)" },
-    { "label": "Containment", "value": "BARBASOL CAN" }
+    {
+      "label": "Period",
+      "value": "Late Cretaceous"
+    },
+    {
+      "label": "Diet",
+      "value": "Herbivore"
+    },
+    {
+      "label": "Length",
+      "value": "~9 m"
+    },
+    {
+      "label": "Mass",
+      "value": "~6\u201312 t"
+    },
+    {
+      "label": "Threat Level",
+      "value": "Moderate (defensive)"
+    },
+    {
+      "label": "Containment",
+      "value": "BARBASOL CAN"
+    }
   ],
   "facts": [
-    "Three facial horns and broad frill — primary defensive display structures.",
+    "Three facial horns and broad frill \u2014 primary defensive display structures.",
     "Beak and dental batteries adapted for shredding tough vegetation.",
     "Herd behavior observed; isolated individuals may be more unpredictable.",
     "Cryo embryo shows excellent mesozoic marker integrity."
   ],
-  "fieldNotes": "Approach from flank only. Sudden movement toward frill triggers charge response.",
-  "modelVideo": "./dino_db_info/videos/triceratops.mp4"
+  "fieldNotes": "Approach from flank only. Sudden movement toward frill triggers charge response."
 }
