@@ -11,6 +11,7 @@ const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
 // Extraction finale countdown length (seconds). 60 = 1:00.
 const EXTRACTION_COUNTDOWN_SECONDS = 60;
 let finaleTimerId = null;
+let lastAlarmSecond = null;
 
 const BOOT_STATUS_STEPS = [
   { at: 0, msg: "Loading cryo recovery modules..." },
@@ -873,13 +874,58 @@ function showExtractionFinale() {
       .join("");
   }
 
-  GAME_STATE.extractionDeadline = Date.now() + EXTRACTION_COUNTDOWN_SECONDS * 1000;
-  saveState(GAME_STATE);
-
-  playAudio("extraction.mp3");
-  startExtractionCountdown();
-
   document.getElementById("finale-overlay").classList.remove("hidden");
+
+  // Countdown stays hidden until the extraction audio finishes playing.
+  const countdown = document.getElementById("finale-countdown");
+  if (countdown) countdown.classList.add("hidden");
+
+  if (GAME_STATE.extractionDeadline) {
+    // Resuming after a reload that occurred once the window was already running.
+    revealAndStartCountdown();
+    return;
+  }
+
+  playAudioThen("extraction.mp3", () => {
+    if (!GAME_STATE.extractionDeadline) {
+      GAME_STATE.extractionDeadline = Date.now() + EXTRACTION_COUNTDOWN_SECONDS * 1000;
+      saveState(GAME_STATE);
+    }
+    revealAndStartCountdown();
+  });
+}
+
+function revealAndStartCountdown() {
+  const countdown = document.getElementById("finale-countdown");
+  if (countdown) countdown.classList.remove("hidden");
+  startExtractionCountdown();
+}
+
+// Plays a one-shot sound and invokes onComplete when it ends (or immediately if unavailable).
+function playAudioThen(file, onComplete) {
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    onComplete();
+  };
+
+  loadAudioBuffer(file)
+    .then(buffer => {
+      if (!buffer) {
+        finish();
+        return;
+      }
+      const source = playBuffer(file, getAudioVolume(file));
+      if (!source) {
+        finish();
+        return;
+      }
+      source.onended = finish;
+      // Backup: ensure completion fires even if onended is missed.
+      setTimeout(finish, Math.ceil(buffer.duration * 1000) + 500);
+    })
+    .catch(() => finish());
 }
 
 function formatCountdown(totalSeconds) {
@@ -933,6 +979,7 @@ function startExtractionCountdown() {
   }
 
   updateCountdownDisplays(initial, false);
+  lastAlarmSecond = null;
 
   finaleTimerId = setInterval(() => {
     const remaining = getExtractionRemaining();
@@ -942,11 +989,16 @@ function startExtractionCountdown() {
       return;
     }
 
+    // Beep once for each of the final 5 seconds (5, 4, 3, 2, 1).
+    if (remaining >= 1 && remaining <= 5 && remaining !== lastAlarmSecond) {
+      lastAlarmSecond = remaining;
+      playAudio("alarm.mp3");
+    }
+
     if (remaining <= 0) {
       updateCountdownDisplays(0, true);
       clearInterval(finaleTimerId);
       finaleTimerId = null;
-      playAudio("alarm.mp3");
       return;
     }
 
@@ -1016,6 +1068,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (GAME_STATE.extractionDeadline) {
     startExtractionCountdown();
+  } else if (GAME_STATE.flags.finalEventTriggered) {
+    // Reloaded during the finale audio before the window began — re-arm it.
+    showExtractionFinale();
   }
 
   if ("serviceWorker" in navigator) {
