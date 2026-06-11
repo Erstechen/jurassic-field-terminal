@@ -5,6 +5,7 @@ let DINO_DB_DATA = {};
 let booting = false;
 let selectedDinoId = null;
 let pendingFinale = false;
+let briefingData = null;
 
 const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
 
@@ -43,7 +44,10 @@ const AUDIO_CONFIG = {
   log_10:     { file: "log_10.mp3",         volume: 0.7  },
 
   // Optional finale sting — drop audio/extraction.mp3 in to enable; silent if absent
-  extraction: { file: "extraction.mp3",     volume: 0.8  }
+  extraction: { file: "extraction.mp3",     volume: 0.8  },
+
+  // Optional mission briefing narration — drop audio/briefing.mp3 in to enable; silent if absent
+  briefing:   { file: "briefing.mp3",       volume: 0.85 }
 };
 
 const AUDIO_BY_FILE = Object.fromEntries(
@@ -361,17 +365,259 @@ async function runDashboardReveal() {
   await flickerReveal(qrPanel);
 }
 
+const DEFAULT_BRIEFING = {
+  title: "MISSION BRIEFING",
+  audio: "briefing.mp3",
+  paragraphs: [
+    "Field Agent — this is InGen Site B command.",
+    "Recover all ten cryo embryos and bring them to the extraction point.",
+    "Scan each marker in sequence. Move fast and stay alert."
+  ]
+};
+
+// How the briefing text appears, all paced to the narration:
+//   "fade"       - each paragraph fades in as a whole
+//   "fade-lines" - each paragraph's wrapped lines fade in top-to-bottom
+//   "typewriter" - characters type on, no sound
+const BRIEFING_TEXT_MODE = "fade-lines";
+// Finish the on-screen text this many ms before the narration audio ends.
+const BRIEFING_TEXT_END_LEAD_MS = 1500;
+// Per-paragraph pacing used only when no narration audio is available.
+const BRIEFING_FALLBACK_PARA_MS = 5000;
+
+function onPlay() {
+  warmUpAudio().catch(() => {});
+
+  // Returning players who already accepted skip straight into the boot sequence.
+  if (GAME_STATE.flags.briefingComplete) {
+    startGame();
+    return;
+  }
+
+  startBriefing();
+}
+
+function startBriefing() {
+  warmUpAudio().catch(() => {});
+
+  const menu = document.getElementById("menu-screen");
+  menu.classList.remove("active");
+  menu.classList.add("hidden");
+
+  const briefing = document.getElementById("briefing-screen");
+  briefing.classList.remove("hidden");
+  briefing.classList.add("active");
+
+  runBriefing();
+}
+
+function runBriefing() {
+  const data = briefingData || DEFAULT_BRIEFING;
+  const titleEl = document.getElementById("briefing-title");
+  const textEl = document.getElementById("briefing-text");
+  const acceptBtn = document.getElementById("accept-btn");
+
+  acceptBtn.classList.add("hidden");
+  if (titleEl && data.title) titleEl.textContent = data.title;
+
+  const paragraphs =
+    Array.isArray(data.paragraphs) && data.paragraphs.length
+      ? data.paragraphs
+      : DEFAULT_BRIEFING.paragraphs;
+
+  textEl.innerHTML = "";
+
+  // Accept becomes available only after BOTH the text reveal and the
+  // narration audio have finished (or immediately if audio is unavailable).
+  let textDone = false;
+  let audioDone = false;
+  const maybeReveal = () => {
+    if (textDone && audioDone) revealAccept();
+  };
+
+  const audioFile = data.audio || "briefing.mp3";
+
+  loadAudioBuffer(audioFile)
+    .then(buffer => {
+      const durationMs = buffer && buffer.duration
+        ? buffer.duration * 1000
+        : paragraphs.length * BRIEFING_FALLBACK_PARA_MS;
+
+      // Start narration.
+      const source = buffer ? playBuffer(audioFile, getAudioVolume(audioFile)) : null;
+      if (source) {
+        source.onended = () => { audioDone = true; maybeReveal(); };
+        setTimeout(() => { audioDone = true; maybeReveal(); }, Math.ceil(durationMs) + 500);
+      } else {
+        audioDone = true;
+      }
+
+      // Pace the on-screen text to land just before the narration ends.
+      const textBudget = Math.max(2000, durationMs - BRIEFING_TEXT_END_LEAD_MS);
+      revealBriefingText(textEl, paragraphs, textBudget).then(() => {
+        textDone = true;
+        maybeReveal();
+      });
+
+      maybeReveal();
+    })
+    .catch(() => {
+      audioDone = true;
+      revealBriefingText(textEl, paragraphs, paragraphs.length * BRIEFING_FALLBACK_PARA_MS)
+        .then(() => {
+          textDone = true;
+          maybeReveal();
+        });
+    });
+}
+
+// Reveals briefing paragraphs across totalMs, time-sliced by paragraph length
+// so longer paragraphs (more narration) get proportionally more time.
+function revealBriefingText(container, paragraphs, totalMs) {
+  const lengths = paragraphs.map(line => Math.max(line.length, 1));
+  const totalChars = lengths.reduce((sum, n) => sum + n, 0);
+
+  if (BRIEFING_TEXT_MODE === "typewriter") {
+    return typewriteBriefing(container, paragraphs, lengths, totalChars, totalMs);
+  }
+  if (BRIEFING_TEXT_MODE === "fade-lines") {
+    return fadeLinesBriefing(container, paragraphs, lengths, totalChars, totalMs);
+  }
+  return fadeBriefing(container, paragraphs, lengths, totalChars, totalMs);
+}
+
+// Like fadeBriefing, but within each paragraph the wrapped visual lines fade in
+// one at a time from top to bottom across that paragraph's time slice.
+function fadeLinesBriefing(container, paragraphs, lengths, totalChars, totalMs) {
+  return new Promise(resolve => {
+    let elapsed = 0;
+    paragraphs.forEach((line, i) => {
+      const start = elapsed;
+      const slice = (lengths[i] / totalChars) * totalMs;
+      elapsed += slice;
+      setTimeout(() => revealParagraphByLines(container, line, slice), start);
+    });
+    setTimeout(resolve, elapsed);
+  });
+}
+
+function revealParagraphByLines(container, text, slice) {
+  const p = document.createElement("p");
+  p.className = "briefing-line briefing-line-instant";
+
+  const words = text.split(" ");
+  words.forEach((word, idx) => {
+    const span = document.createElement("span");
+    span.className = "briefing-word";
+    span.textContent = idx < words.length - 1 ? `${word} ` : word;
+    p.appendChild(span);
+  });
+  container.appendChild(p);
+
+  // Group word spans into visual lines by their rendered vertical position.
+  const spans = Array.from(p.querySelectorAll(".briefing-word"));
+  const lines = [];
+  let currentTop = null;
+  spans.forEach(span => {
+    const top = span.offsetTop;
+    if (currentTop === null || top !== currentTop) {
+      currentTop = top;
+      lines.push([]);
+    }
+    lines[lines.length - 1].push(span);
+  });
+
+  const perLine = slice / Math.max(lines.length, 1);
+  lines.forEach((group, li) => {
+    setTimeout(() => {
+      group.forEach(span => span.classList.add("briefing-word-visible"));
+    }, li * perLine);
+  });
+}
+
+function fadeBriefing(container, paragraphs, lengths, totalChars, totalMs) {
+  return new Promise(resolve => {
+    let elapsed = 0;
+    paragraphs.forEach((line, i) => {
+      const start = elapsed;
+      elapsed += (lengths[i] / totalChars) * totalMs;
+      setTimeout(() => {
+        const p = document.createElement("p");
+        p.className = "briefing-line";
+        p.textContent = line;
+        container.appendChild(p);
+      }, start);
+    });
+    setTimeout(resolve, elapsed);
+  });
+}
+
+function typewriteBriefing(container, paragraphs, lengths, totalChars, totalMs) {
+  return new Promise(resolve => {
+    let index = 0;
+
+    function nextParagraph() {
+      if (index >= paragraphs.length) {
+        resolve();
+        return;
+      }
+
+      const line = paragraphs[index];
+      const slice = (lengths[index] / totalChars) * totalMs;
+      const charDelay = Math.max(8, slice / Math.max(line.length, 1));
+
+      const p = document.createElement("p");
+      p.className = "briefing-line briefing-line-instant";
+      container.appendChild(p);
+
+      let c = 0;
+      const timer = setInterval(() => {
+        if (c >= line.length) {
+          clearInterval(timer);
+          index += 1;
+          nextParagraph();
+          return;
+        }
+        p.textContent += line[c];
+        c += 1;
+      }, charDelay);
+    }
+
+    nextParagraph();
+  });
+}
+
+function revealAccept() {
+  const btn = document.getElementById("accept-btn");
+  if (!btn || !btn.classList.contains("hidden")) return;
+  btn.classList.remove("hidden");
+  flickerReveal(btn, { fast: true });
+}
+
+function acceptMission() {
+  GAME_STATE.flags.briefingComplete = true;
+  saveState(GAME_STATE);
+  startGame();
+}
+
 async function startGame() {
   if (booting) return;
   await warmUpAudio();
   booting = true;
 
-  const initBtn = document.getElementById("init-btn");
-  initBtn.disabled = true;
-  initBtn.textContent = "INITIALIZING...";
+  const acceptBtn = document.getElementById("accept-btn");
+  if (acceptBtn) {
+    acceptBtn.disabled = true;
+    acceptBtn.textContent = "INITIALIZING...";
+  }
 
-  document.getElementById("boot-screen").classList.remove("active");
-  document.getElementById("boot-screen").classList.add("hidden");
+  ["menu-screen", "briefing-screen"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove("active");
+      el.classList.add("hidden");
+    }
+  });
 
   const mainScreen = document.getElementById("main-screen");
   mainScreen.classList.remove("hidden");
@@ -408,6 +654,17 @@ async function loadGameData() {
   MISSION_DATA = missions;
   AUDIO_LOG_DATA = audioLogs;
   await loadDinoDbData();
+  await loadBriefingData();
+}
+
+async function loadBriefingData() {
+  try {
+    const response = await fetch("./data/briefing.json");
+    briefingData = response.ok ? await response.json() : null;
+  } catch (err) {
+    console.warn("Failed to load briefing data:", err);
+    briefingData = null;
+  }
 }
 
 async function loadDinoDbData() {
@@ -1050,10 +1307,12 @@ window.addEventListener("storage", event => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   initAudioSystem().catch(() => {});
-  document.getElementById("init-btn").addEventListener("pointerdown", () => {
+  const playBtn = document.getElementById("play-btn");
+  playBtn.addEventListener("pointerdown", () => {
     warmUpAudio().catch(() => {});
   }, { once: true });
-  document.getElementById("init-btn").addEventListener("click", startGame);
+  playBtn.addEventListener("click", onPlay);
+  document.getElementById("accept-btn").addEventListener("click", acceptMission);
   setupButtonSounds();
 
   document.querySelectorAll(".nav-btn").forEach(btn => {

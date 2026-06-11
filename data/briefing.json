@@ -1,0 +1,12 @@
+{
+  "title": "MISSION BRIEFING",
+  "audio": "briefing.mp3",
+  "paragraphs": [
+    "Hello field agent, this is InGen Site B command. If you are receiving this, the situation has escalated and you are the only one that can help.",
+    "Ten cryogenically frozen embryos remain somewhere on the island. Each embryo needs to be found, secured in a cryo containment capsule, and extracted before the perimeter fails.",
+    "If you accept the mission, you'll need to use this field terminal to scan each recovery marker. Follow the mission sequence exactly, the specimens must be secured in order. Be on the lookout for environmental alerts and predator activity along the way.",
+    "When all ten embryos are secured, you will receive extraction coordinates. The extraction team has a limited window to pick you up. Do not miss the window, this is the only chance we'll have to extract you!",
+    "We are in desperate need of your help. Thank you Agent, and good luck!"
+  ]
+}
+
