@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v15";
+const CACHE_NAME = "jp-cache-v16";
 
 const CORE_ASSETS = [
   "./",
@@ -63,7 +63,8 @@ const AUDIO_ASSETS = [
   "./audio/log_07.mp3",
   "./audio/log_08.mp3",
   "./audio/log_09.mp3",
-  "./audio/log_10.mp3"
+  "./audio/log_10.mp3",
+  "./audio/extraction.mp3"
 ];
 
 self.addEventListener("install", event => {

@@ -4,6 +4,7 @@ let AUDIO_LOG_DATA = {};
 let DINO_DB_DATA = {};
 let booting = false;
 let selectedDinoId = null;
+let pendingFinale = false;
 
 const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
 
@@ -34,7 +35,10 @@ const AUDIO_CONFIG = {
   log_07:     { file: "log_07.mp3",         volume: 0.7  },
   log_08:     { file: "log_08.mp3",         volume: 0.7  },
   log_09:     { file: "log_09.mp3",         volume: 0.7  },
-  log_10:     { file: "log_10.mp3",         volume: 0.7  }
+  log_10:     { file: "log_10.mp3",         volume: 0.7  },
+
+  // Optional finale sting — drop audio/extraction.mp3 in to enable; silent if absent
+  extraction: { file: "extraction.mp3",     volume: 0.8  }
 };
 
 const AUDIO_BY_FILE = Object.fromEntries(
@@ -696,6 +700,15 @@ function collectEmbryo(id, payload) {
   if (payload?.unlockMission) {
     unlockMission(payload.unlockMission);
   }
+
+  if (allEmbryosRecovered() && !GAME_STATE.flags.finalEventTriggered) {
+    pendingFinale = true;
+  }
+}
+
+function allEmbryosRecovered() {
+  const ids = Object.keys(GAME_STATE.embryos);
+  return ids.length > 0 && ids.every(id => GAME_STATE.embryos[id] === "collected");
 }
 
 function unlockMission(id) {
@@ -723,6 +736,16 @@ function handleEvent(payload) {
   if (payload.eventId === "gps_update" && payload.gpsSignal) {
     updateSignal(payload.gpsSignal);
     showEventOverlay("GPS UPDATE", `Signal status: ${payload.gpsSignal}`);
+    return;
+  }
+
+  if (payload.eventId === "perimeter_alarm") {
+    playAudio("alarm.mp3");
+    GAME_STATE.systems.motionTrackerEnabled = true;
+    showEventOverlay(
+      "PERIMETER ALARM",
+      "Perimeter breach detected. Motion tracker engaged — verify containment and proceed with caution."
+    );
     return;
   }
 
@@ -798,6 +821,55 @@ function hideEventOverlay() {
   document.getElementById("event-overlay").classList.add("hidden");
 }
 
+function dismissEventOverlay() {
+  hideEventOverlay();
+  if (pendingFinale) {
+    pendingFinale = false;
+    showExtractionFinale();
+  }
+}
+
+function showExtractionFinale() {
+  GAME_STATE.flags.finalEventTriggered = true;
+
+  Object.keys(GAME_STATE.missions).forEach(missionId => {
+    if (GAME_STATE.missions[missionId] === "active") {
+      GAME_STATE.missions[missionId] = "complete";
+    }
+  });
+  if (GAME_STATE.missions.mission_11 !== undefined) {
+    GAME_STATE.missions.mission_11 = "complete";
+  }
+
+  saveState(GAME_STATE);
+  render();
+
+  const roster = document.getElementById("finale-roster");
+  if (roster) {
+    roster.innerHTML = Object.keys(EMBRYO_DATA)
+      .filter(id => GAME_STATE.embryos[id] === "collected")
+      .map(id => {
+        const meta = getDinoMeta(id);
+        const name = meta ? meta.name : id;
+        const img = meta?.image
+          ? `<img src="${escapeHtml(meta.image)}" alt="" />`
+          : "";
+        return `<div class="finale-spec">${img}<span>${escapeHtml(name)}</span></div>`;
+      })
+      .join("");
+  }
+
+  playAudio("extraction.mp3");
+
+  document.getElementById("finale-overlay").classList.remove("hidden");
+}
+
+function hideFinaleOverlay() {
+  document.getElementById("finale-overlay").classList.add("hidden");
+}
+
+window.triggerFinale = showExtractionFinale;
+
 window.processQRInput = function processQRInput() {
   const input = document.getElementById("qrInput").value.trim();
 
@@ -838,7 +910,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => showScreen(btn.dataset.screen));
   });
 
-  document.getElementById("dismiss-overlay").addEventListener("click", hideEventOverlay);
+  document.getElementById("dismiss-overlay").addEventListener("click", dismissEventOverlay);
+  document.getElementById("finale-dismiss").addEventListener("click", hideFinaleOverlay);
 
   await loadGameData();
   render();
