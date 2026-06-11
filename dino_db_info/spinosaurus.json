@@ -23,8 +23,8 @@
       "value": "Riparian / coastal"
     },
     {
-      "label": "Containment",
-      "value": "BARBASOL CAN"
+      "label": "Embryo Contained",
+      "value": "True"
     }
   ],
   "facts": [

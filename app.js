@@ -21,7 +21,7 @@ const AUDIO_CONFIG = {
   typewriter: { file: "sfx_typewriter.mp3", volume: 0.35 },
   flicker:    { file: "sfx_flicker.mp3",    volume: 0.35 },
   button:     { file: "sfx_button.mp3",     volume: 0.45 },
-  loading:    { file: "sfx_loading.mp3",    volume: 1.0  },
+  loading:    { file: "sfx_loading.mp3",    volume: 0.5 },
 
   // Story & event audio
   alarm:      { file: "alarm.mp3",          volume: 0.8  },
@@ -506,7 +506,6 @@ function escapeHtml(text) {
 }
 
 function buildHologramHtml(meta) {
-  const src = escapeHtml(meta.image);
   const altText = escapeHtml(meta.name);
 
   return `
@@ -515,20 +514,11 @@ function buildHologramHtml(meta) {
       <div class="holo-ring holo-ring-outer"></div>
       <div class="holo-ring holo-ring-inner"></div>
       <div class="holo-spinner">
-        <div class="holo-model-wrap">
-          <div class="holo-glow" aria-hidden="true"></div>
-          <img src="${src}" alt="${altText}" class="holo-model" />
-          <img src="${src}" alt="" class="holo-model holo-chroma holo-chroma-c" aria-hidden="true" />
-          <img src="${src}" alt="" class="holo-model holo-chroma holo-chroma-m" aria-hidden="true" />
-          <div class="holo-shimmer" aria-hidden="true"></div>
-        </div>
-        <div class="holo-reflection" aria-hidden="true">
-          <img src="${src}" alt="" class="holo-reflection-img" />
-        </div>
+        <img src="${escapeHtml(meta.image)}" alt="${altText}" class="holo-model" />
       </div>
-      <div class="holo-vignette" aria-hidden="true"></div>
+      <div class="holo-scan-bar" aria-hidden="true"></div>
       <div class="holo-scanlines"></div>
-      <div class="holo-label">HOLOGRAPHIC RENDER — ROTATING</div>
+      <div class="holo-label">HOLOGRAPHIC RENDER — SCANNING</div>
     </div>
   `;
 }
@@ -699,7 +689,7 @@ function collectEmbryo(id, payload) {
   const meta = getDinoMeta(id);
   showEventOverlay(
     "EMBRYO RECOVERED",
-    `${name} secured in Barbasol can.`,
+    `Secure ${name} embryo in cryogenic storage capsule.`,
     { image: meta?.image, variant: "success" }
   );
 

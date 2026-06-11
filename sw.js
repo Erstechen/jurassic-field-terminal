@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v14";
+const CACHE_NAME = "jp-cache-v15";
 
 const CORE_ASSETS = [
   "./",
@@ -18,7 +18,8 @@ const CORE_ASSETS = [
   "./gm/gm.js",
   "./gm/gm.css",
   "./images/icon-192.png",
-  "./images/icon-512.png"
+  "./images/icon-512.png",
+  "./images/ingen_logo.png"
 ];
 
 const DINO_DB_INFO = [
