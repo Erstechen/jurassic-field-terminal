@@ -129,6 +129,275 @@ body {
   margin: 0 36px;
 }
 
+/* ============================================================
+   Main menu (title) screen
+   ============================================================ */
+.menu-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Background image layer (images/menu_bg.jpg) with a translucent dark-green
+   wash on top to fade the photo's brightness. Adjust the rgba alpha values
+   below to make the green tint stronger (closer to 1) or lighter (closer to 0). */
+.menu-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: #060a07;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(7, 22, 12, 0.92) 0%,
+      rgba(9, 24, 14, 0.8) 50%,
+      rgba(5, 14, 8, 1.0) 100%
+    ),
+    url("./images/menu_bg.jpg");
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+}
+
+/* Darkening + scanline vignette so the title and buttons stay legible. */
+.menu-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.78) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.25) 40%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.menu-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 4vh, 38px);
+  padding: 24px;
+  max-width: 680px;
+  width: 100%;
+}
+
+.menu-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10px;
+}
+
+.menu-jp-logo {
+  width: min(78%, 360px);
+  height: auto;
+  filter: drop-shadow(0 0 18px rgba(0, 0, 0, 0.85));
+  animation: menu-logo-in 900ms ease-out both;
+}
+
+/* If the JP logo asset is absent, hide the broken image entirely. */
+.menu-jp-logo.asset-missing {
+  display: none;
+}
+
+.menu-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-overline {
+  font-size: 0.72em;
+  letter-spacing: 0.42em;
+  color: rgba(255, 152, 0, 0.85);
+  padding-left: 0.42em;
+}
+
+.menu-title {
+  margin: 0;
+  font-size: clamp(2.1em, 8vw, 3.6em);
+  line-height: 1.05;
+  letter-spacing: 0.12em;
+  color: #f3d873;
+  text-shadow:
+    0 0 12px rgba(212, 175, 55, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.menu-tagline {
+  font-size: 0.92em;
+  letter-spacing: 0.22em;
+  color: #c7d0c0;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.menu-play-btn {
+  font-family: inherit;
+  font-size: 1.35em;
+  font-weight: bold;
+  letter-spacing: 0.4em;
+  padding: 16px 64px 16px 68px;
+  color: #0a0a0a;
+  background: linear-gradient(180deg, #f3d873, #d4af37);
+  border: 2px solid #f3d873;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow:
+    0 0 22px rgba(212, 175, 55, 0.55),
+    inset 0 0 12px rgba(255, 255, 255, 0.25);
+  animation: menu-play-pulse 2.4s ease-in-out infinite;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.menu-play-btn:hover {
+  transform: scale(1.04);
+}
+
+.menu-play-btn:active {
+  transform: scale(0.97);
+}
+
+.menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.8;
+}
+
+.menu-brand-text {
+  font-size: 0.68em;
+  letter-spacing: 0.14em;
+  color: #8a9384;
+  text-transform: uppercase;
+}
+
+@keyframes menu-logo-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes menu-play-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(212, 175, 55, 0.45), inset 0 0 12px rgba(255, 255, 255, 0.25); }
+  50%      { box-shadow: 0 0 34px rgba(212, 175, 55, 0.85), inset 0 0 12px rgba(255, 255, 255, 0.3); }
+}
+
+/* ============================================================
+   Mission briefing screen
+   ============================================================ */
+.briefing-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.briefing-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 680px;
+  padding: 28px 22px;
+}
+
+.briefing-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+}
+
+.briefing-header-label {
+  font-size: 0.72em;
+  letter-spacing: 0.24em;
+  color: rgba(255, 152, 0, 0.85);
+  text-transform: uppercase;
+  animation: briefing-blink 1.6s steps(1) infinite;
+}
+
+.briefing-title {
+  margin: 0;
+  font-size: clamp(1.4em, 5vw, 2em);
+  letter-spacing: 0.2em;
+  color: #f3d873;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.briefing-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 100%;
+  text-align: left;
+  font-size: 1.02em;
+  line-height: 1.6;
+  color: #d8dcd0;
+  min-height: 30vh;
+}
+
+.briefing-line {
+  margin: 0;
+  opacity: 0;
+  border-left: 2px solid rgba(212, 175, 55, 0.35);
+  padding-left: 14px;
+  animation: briefing-line-in 700ms ease-out forwards;
+}
+
+/* Typewriter / line-by-line modes manage their own children, so the paragraph
+   container is visible immediately and skips the whole-paragraph fade. */
+.briefing-line.briefing-line-instant {
+  opacity: 1;
+  animation: none;
+}
+
+/* Per-word spans used by the line-by-line fade variation. */
+.briefing-word {
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+.briefing-word.briefing-word-visible {
+  opacity: 1;
+}
+
+.briefing-accept {
+  margin-top: 12px;
+  font-family: inherit;
+  font-size: 1.15em;
+  font-weight: bold;
+  letter-spacing: 0.28em;
+  padding: 14px 40px;
+  color: #0a0a0a;
+  background: linear-gradient(180deg, #f3d873, #d4af37);
+  border: 2px solid #f3d873;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(212, 175, 55, 0.6);
+  animation: menu-play-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes briefing-line-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes briefing-blink {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0.35; }
+}
+
 /* Main screen brand bar */
 .brand-bar {
   display: flex;
@@ -1042,9 +1311,11 @@ button.danger {
   min-height: 1.2em;
 }
 
-#boot-screen button:disabled {
+.menu-play-btn:disabled,
+.briefing-accept:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  animation: none;
 }
 
 @keyframes cursor-blink {

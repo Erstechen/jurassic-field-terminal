@@ -11,25 +11,61 @@
 </head>
 
 <body>
-  <div id="boot-screen" class="screen active">
+  <div id="menu-screen" class="screen menu-screen active">
+    <div class="menu-bg" aria-hidden="true"></div>
+    <div class="menu-vignette" aria-hidden="true"></div>
     <div class="scanlines"></div>
     <div class="frame-corner frame-corner-tl"></div>
     <div class="frame-corner frame-corner-tr"></div>
     <div class="frame-corner frame-corner-bl"></div>
     <div class="frame-corner frame-corner-br"></div>
 
-    <div class="boot-brand">
-      <span class="ingen-logo ingen-logo-lg" role="img" aria-label="InGen"></span>
-      <span class="boot-brand-name">INGEN</span>
-      <span class="boot-brand-sub">International Genetic Technologies, Inc.</span>
+    <div class="menu-content">
+      <div class="menu-logos">
+        <img
+          id="menu-jp-logo"
+          class="menu-jp-logo"
+          src="./images/jurassic_park_logo.png"
+          alt="Jurassic Park"
+          onerror="this.classList.add('asset-missing')"
+        />
+      </div>
+
+      <div class="menu-title-block">
+        <span class="menu-overline">INGEN FIELD OPERATION</span>
+        <h1 class="menu-title">JURASSIC EMBRYO<br />RECOVERY</h1>
+        <span class="menu-tagline">A Field Recovery Adventure</span>
+      </div>
+
+      <button id="play-btn" class="menu-play-btn">PLAY</button>
+
+      <div class="menu-brand">
+        <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+        <span class="menu-brand-text">INGEN // International Genetic Technologies, Inc.</span>
+      </div>
     </div>
 
-    <h1>INGEN FIELD TERMINAL</h1>
-    <p class="subtitle">Cryo Recovery System v2.4</p>
-    <p>Initializing embryo tracking modules...</p>
-    <button id="init-btn">INITIALIZE</button>
-
     <div class="boot-classification">PROPERTY OF INGEN — AUTHORIZED PERSONNEL ONLY</div>
+  </div>
+
+  <div id="briefing-screen" class="screen briefing-screen hidden">
+    <div class="scanlines"></div>
+    <div class="frame-corner frame-corner-tl"></div>
+    <div class="frame-corner frame-corner-tr"></div>
+    <div class="frame-corner frame-corner-bl"></div>
+    <div class="frame-corner frame-corner-br"></div>
+
+    <div class="briefing-content">
+      <div class="briefing-header">
+        <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+        <span class="briefing-header-label">INCOMING TRANSMISSION // PRIORITY ONE</span>
+      </div>
+
+      <h2 id="briefing-title" class="briefing-title">MISSION BRIEFING</h2>
+      <div id="briefing-text" class="briefing-text"></div>
+
+      <button id="accept-btn" class="briefing-accept hidden">ACCEPT THE MISSION</button>
+    </div>
   </div>
 
   <div id="main-screen" class="screen hidden booting">

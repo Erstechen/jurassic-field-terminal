@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v22";
+const CACHE_NAME = "jp-cache-v23";
 
 const CORE_ASSETS = [
   "./",
@@ -12,6 +12,7 @@ const CORE_ASSETS = [
   "./data/embryos.json",
   "./data/missions.json",
   "./data/audioLogs.json",
+  "./data/briefing.json",
   "./qr/brachiosaurus.json",
   "./qr/raptor_breach.json",
   "./gm/index.html",
@@ -64,7 +65,14 @@ const AUDIO_ASSETS = [
   "./audio/log_08.mp3",
   "./audio/log_09.mp3",
   "./audio/log_10.mp3",
-  "./audio/extraction.mp3"
+  "./audio/extraction.mp3",
+  "./audio/briefing.mp3"
+];
+
+// Optional menu/title-screen art. Cached when present; missing files are ignored.
+const MENU_ASSETS = [
+  "./images/menu_bg.jpg",
+  "./images/jurassic_park_logo.png"
 ];
 
 self.addEventListener("install", event => {
@@ -72,7 +80,7 @@ self.addEventListener("install", event => {
     caches.open(CACHE_NAME).then(async cache => {
       await cache.addAll(CORE_ASSETS);
       await Promise.all(
-        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS].map(url =>
+        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS, ...MENU_ASSETS].map(url =>
           cache.add(url).catch(() => {})
         )
       );

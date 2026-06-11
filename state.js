@@ -26,7 +26,8 @@ const defaultState = {
     gpsSignal: "signal lost"
   },
   flags: {
-    finalEventTriggered: false
+    finalEventTriggered: false,
+    briefingComplete: false
   },
   extractionDeadline: null
 };
