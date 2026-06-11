@@ -1,0 +1,37 @@
+{
+  "id": "carnotaurus",
+  "summary": "Field designation TORO \u2014 bull-horned abelisaur noted for extreme speed and head-butting display behavior. InGen asset linked to Camp Cretaceous recovery logs.",
+  "stats": [
+    {
+      "label": "Period",
+      "value": "Late Cretaceous"
+    },
+    {
+      "label": "Diet",
+      "value": "Carnivore"
+    },
+    {
+      "label": "Length",
+      "value": "~9 m"
+    },
+    {
+      "label": "Top Speed",
+      "value": "~50\u201360 km/h (est.)"
+    },
+    {
+      "label": "Threat Level",
+      "value": "High"
+    },
+    {
+      "label": "Embryo Contained",
+      "value": "True"
+    }
+  ],
+  "facts": [
+    "Reduced forelimbs; locomotion powered almost entirely by hind legs.",
+    "Prominent supraorbital horns \u2014 used in intraspecies combat.",
+    "Minimal skin impressions suggest fine scales with possible osteoderms.",
+    "Toro specimen shows scarring consistent with prior containment breach."
+  ],
+  "fieldNotes": "Open terrain specialist. Do not attempt pursuit on foot."
+}

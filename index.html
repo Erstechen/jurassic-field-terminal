@@ -13,14 +13,40 @@
 <body>
   <div id="boot-screen" class="screen active">
     <div class="scanlines"></div>
+    <div class="frame-corner frame-corner-tl"></div>
+    <div class="frame-corner frame-corner-tr"></div>
+    <div class="frame-corner frame-corner-bl"></div>
+    <div class="frame-corner frame-corner-br"></div>
+
+    <div class="boot-brand">
+      <span class="ingen-logo ingen-logo-lg" role="img" aria-label="InGen"></span>
+      <span class="boot-brand-name">INGEN</span>
+      <span class="boot-brand-sub">International Genetic Technologies, Inc.</span>
+    </div>
+
     <h1>INGEN FIELD TERMINAL</h1>
     <p class="subtitle">Cryo Recovery System v2.4</p>
     <p>Initializing embryo tracking modules...</p>
     <button id="init-btn">INITIALIZE</button>
+
+    <div class="boot-classification">PROPERTY OF INGEN — AUTHORIZED PERSONNEL ONLY</div>
   </div>
 
   <div id="main-screen" class="screen hidden booting">
     <div class="scanlines"></div>
+    <div class="frame-corner frame-corner-tl"></div>
+    <div class="frame-corner frame-corner-tr"></div>
+    <div class="frame-corner frame-corner-bl"></div>
+    <div class="frame-corner frame-corner-br"></div>
+
+    <div class="brand-bar">
+      <span class="ingen-logo" role="img" aria-label="InGen"></span>
+      <div class="brand-bar-text">
+        <span class="brand-bar-name">INGEN</span>
+        <span class="brand-bar-sub">International Genetic Technologies</span>
+      </div>
+      <span class="brand-bar-tag">FIELD OPS // CLASSIFIED</span>
+    </div>
 
     <div id="boot-loader" class="boot-loader">
       <div class="boot-loader-label">SYSTEM BOOT SEQUENCE</div>
@@ -97,6 +123,12 @@
         </div>
       </section>
     </div>
+
+    <footer class="brand-footer">
+      <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+      <span>INGEN SITE B // CRYO RECOVERY DIVISION</span>
+      <span class="brand-footer-doc">DOC REF: IG-FT-2.4</span>
+    </footer>
   </div>
 
   <div id="qr-scanner-overlay" class="scanner-overlay hidden">

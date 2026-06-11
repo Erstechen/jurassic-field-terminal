@@ -1,0 +1,37 @@
+{
+  "id": "spinosaurus",
+  "summary": "Semi-aquatic apex predator with distinctive dorsal sail. InGen assets tagged for restricted containment due to territorial range and aggression index.",
+  "stats": [
+    {
+      "label": "Period",
+      "value": "Early Cretaceous"
+    },
+    {
+      "label": "Diet",
+      "value": "Carnivore / piscivore"
+    },
+    {
+      "label": "Length",
+      "value": "~15\u201318 m"
+    },
+    {
+      "label": "Threat Level",
+      "value": "High"
+    },
+    {
+      "label": "Habitat",
+      "value": "Riparian / coastal"
+    },
+    {
+      "label": "Embryo Contained",
+      "value": "True"
+    }
+  ],
+  "facts": [
+    "Elongated skull and conical teeth suited for catching fish.",
+    "Dorsal neural spines form a sail \u2014 thermoregulation and display role debated.",
+    "Strong swimmer; do not assume land-bound movement patterns.",
+    "Recovered embryo flagged for enhanced tracking protocols."
+  ],
+  "fieldNotes": "Avoid waterline approaches. Specimen may claim territory across river systems."
+}
