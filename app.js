@@ -683,6 +683,16 @@ function collectEmbryo(id, payload) {
     return;
   }
 
+  const expectedId = getActiveMission()?.embryo;
+  if (expectedId && id !== expectedId) {
+    const expectedName = EMBRYO_DATA[expectedId]?.name || expectedId;
+    showEventOverlay(
+      "OUT OF SEQUENCE",
+      `Recovery protocol violation. Current objective: secure the ${expectedName} embryo first.`
+    );
+    return;
+  }
+
   GAME_STATE.embryos[id] = "collected";
   GAME_STATE.player.embryosCollected.push(id);
   selectedDinoId = id;
