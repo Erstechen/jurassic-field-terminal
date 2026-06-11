@@ -90,6 +90,11 @@
         </details>
         <button class="danger" onclick="resetGame()">RESET STATE</button>
       </section>
+
+      <div id="extraction-banner" class="extraction-banner hidden" role="status">
+        <span class="extraction-banner-label">EXTRACTION WINDOW</span>
+        <span id="extraction-banner-timer" class="extraction-banner-timer">--:--</span>
+      </div>
     </div>
 
     <div id="view-missions" class="view hidden">
@@ -164,18 +169,23 @@
 
     <div class="finale-inner">
       <span class="ingen-logo ingen-logo-lg" role="img" aria-label="InGen"></span>
-      <div class="finale-status">EXTRACTION PROTOCOL // COMPLETE</div>
-      <h1 class="finale-title">ALL SPECIMENS RECOVERED</h1>
-      <p class="finale-sub">10 / 10 cryogenic embryos secured in the Barbasol containment unit.</p>
+      <div class="finale-status">PRIORITY ORDER // EVACUATION</div>
+      <h1 class="finale-title">PROCEED TO EXTRACTION POINT</h1>
+      <p class="finale-sub">All 10 cryo embryos secured. Evacuation window is OPEN.</p>
+
+      <div class="finale-countdown">
+        <span class="finale-countdown-label">EXTRACTION WINDOW</span>
+        <span id="finale-timer" class="finale-timer">--:--</span>
+      </div>
+
+      <p id="finale-message" class="finale-message">
+        Move now, Field Agent. Transport the Barbasol containment unit to the marked
+        extraction point before the window closes. Do not stop. Keep the specimens in sight.
+      </p>
 
       <div id="finale-roster" class="finale-roster"></div>
 
-      <p class="finale-message">
-        Cryo recovery objectives fulfilled. Transport inbound to extraction coordinates.
-        InGen thanks you for your service, Field Agent.
-      </p>
-
-      <button id="finale-dismiss">RETURN TO TERMINAL</button>
+      <button id="finale-dismiss">ACKNOWLEDGE ORDERS</button>
     </div>
   </div>
 

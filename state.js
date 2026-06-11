@@ -27,7 +27,8 @@ const defaultState = {
   },
   flags: {
     finalEventTriggered: false
-  }
+  },
+  extractionDeadline: null
 };
 
 function migrateState(raw) {

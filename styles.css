@@ -493,6 +493,82 @@ button.danger {
   line-height: 1.5;
 }
 
+/* Persistent extraction window display (shown beneath the Field Scanner) */
+.extraction-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 18px 16px;
+  background: rgba(20, 0, 0, 0.85);
+  border: 1px solid rgba(255, 82, 82, 0.5);
+  box-shadow: 0 0 20px rgba(255, 82, 82, 0.25);
+}
+
+.extraction-banner-label {
+  font-size: 0.72em;
+  letter-spacing: 0.26em;
+  color: rgba(255, 82, 82, 0.85);
+  text-transform: uppercase;
+}
+
+.extraction-banner-timer {
+  font-size: clamp(2.2em, 9vw, 3.4em);
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  color: #ff5252;
+  text-shadow: 0 0 16px rgba(255, 82, 82, 0.6);
+  animation: finale-timer-pulse 1s steps(2) infinite;
+}
+
+.extraction-banner-timer.low {
+  animation: finale-timer-pulse 0.5s steps(2) infinite;
+}
+
+.extraction-banner-timer.expired {
+  color: #ff1744;
+  animation: finale-timer-pulse 0.35s steps(2) infinite;
+}
+
+.finale-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 6px 0 18px;
+}
+
+.finale-countdown-label {
+  font-size: 0.65em;
+  letter-spacing: 0.28em;
+  color: rgba(255, 82, 82, 0.8);
+  text-transform: uppercase;
+}
+
+.finale-timer {
+  font-size: clamp(2.4em, 9vw, 3.6em);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: #ff5252;
+  text-shadow: 0 0 16px rgba(255, 82, 82, 0.6);
+  animation: finale-timer-pulse 1s steps(2) infinite;
+}
+
+.finale-timer.low {
+  animation: finale-timer-pulse 0.5s steps(2) infinite;
+}
+
+.finale-timer.expired {
+  color: #ff1744;
+  animation: finale-timer-pulse 0.35s steps(2) infinite;
+}
+
+@keyframes finale-timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
 .finale-roster {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));

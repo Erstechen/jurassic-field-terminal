@@ -8,6 +8,10 @@ let pendingFinale = false;
 
 const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
 
+// Extraction finale countdown length (seconds). 60 = 1:00.
+const EXTRACTION_COUNTDOWN_SECONDS = 60;
+let finaleTimerId = null;
+
 const BOOT_STATUS_STEPS = [
   { at: 0, msg: "Loading cryo recovery modules..." },
   { at: 22, msg: "Syncing embryo database..." },
@@ -859,9 +863,92 @@ function showExtractionFinale() {
       .join("");
   }
 
+  GAME_STATE.extractionDeadline = Date.now() + EXTRACTION_COUNTDOWN_SECONDS * 1000;
+  saveState(GAME_STATE);
+
   playAudio("extraction.mp3");
+  startExtractionCountdown();
 
   document.getElementById("finale-overlay").classList.remove("hidden");
+}
+
+function formatCountdown(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function getExtractionRemaining() {
+  if (!GAME_STATE.extractionDeadline) return null;
+  return Math.max(0, Math.round((GAME_STATE.extractionDeadline - Date.now()) / 1000));
+}
+
+function updateCountdownDisplays(remaining, expired) {
+  const text = formatCountdown(remaining);
+  const banner = document.getElementById("extraction-banner");
+  const targets = [
+    document.getElementById("finale-timer"),
+    document.getElementById("extraction-banner-timer")
+  ];
+
+  targets.forEach(el => {
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle("low", !expired && remaining <= 30);
+    el.classList.toggle("expired", expired);
+  });
+
+  if (banner) banner.classList.remove("hidden");
+
+  if (expired) {
+    const msg = document.getElementById("finale-message");
+    if (msg) {
+      msg.textContent =
+        "EXTRACTION WINDOW CLOSED. Proceed immediately — transport is holding past schedule.";
+    }
+  }
+}
+
+// Resumes from the stored deadline; keeps running regardless of overlay visibility.
+function startExtractionCountdown() {
+  clearInterval(finaleTimerId);
+  finaleTimerId = null;
+
+  const initial = getExtractionRemaining();
+  if (initial === null) return;
+
+  if (initial <= 0) {
+    updateCountdownDisplays(0, true);
+    return;
+  }
+
+  updateCountdownDisplays(initial, false);
+
+  finaleTimerId = setInterval(() => {
+    const remaining = getExtractionRemaining();
+
+    if (remaining === null) {
+      stopExtractionCountdown();
+      return;
+    }
+
+    if (remaining <= 0) {
+      updateCountdownDisplays(0, true);
+      clearInterval(finaleTimerId);
+      finaleTimerId = null;
+      playAudio("alarm.mp3");
+      return;
+    }
+
+    updateCountdownDisplays(remaining, false);
+  }, 1000);
+}
+
+function stopExtractionCountdown() {
+  clearInterval(finaleTimerId);
+  finaleTimerId = null;
+  const banner = document.getElementById("extraction-banner");
+  if (banner) banner.classList.add("hidden");
 }
 
 function hideFinaleOverlay() {
@@ -884,6 +971,7 @@ window.processQRInput = function processQRInput() {
 window.resetGame = function resetGame() {
   if (!confirm("Reset all progress? This cannot be undone.")) return;
   GAME_STATE = resetState();
+  stopExtractionCountdown();
   render();
 };
 
@@ -915,6 +1003,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadGameData();
   render();
+
+  if (GAME_STATE.extractionDeadline) {
+    startExtractionCountdown();
+  }
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(err => {
