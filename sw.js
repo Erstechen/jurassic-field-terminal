@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v23";
+const CACHE_NAME = "jp-cache-v31";
 
 const CORE_ASSETS = [
   "./",
@@ -75,12 +75,26 @@ const MENU_ASSETS = [
   "./images/jurassic_park_logo.png"
 ];
 
+// Optional mission clue images. Cached when present; missing files are ignored.
+const MISSION_IMAGES = [
+  "./mission_images/mission_01.jpg",
+  "./mission_images/mission_02.jpg",
+  "./mission_images/mission_03.jpg",
+  "./mission_images/mission_04.jpg",
+  "./mission_images/mission_05.jpg",
+  "./mission_images/mission_06.jpg",
+  "./mission_images/mission_07.jpg",
+  "./mission_images/mission_08.jpg",
+  "./mission_images/mission_09.jpg",
+  "./mission_images/mission_10.jpg"
+];
+
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       await cache.addAll(CORE_ASSETS);
       await Promise.all(
-        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS, ...MENU_ASSETS].map(url =>
+        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS, ...MENU_ASSETS, ...MISSION_IMAGES].map(url =>
           cache.add(url).catch(() => {})
         )
       );

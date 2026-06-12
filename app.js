@@ -249,7 +249,47 @@ function resetInitTargets() {
 
   document.getElementById("dashboard-title").textContent = "";
   document.getElementById("status").textContent = "";
-  document.getElementById("mission-body").textContent = "";
+  document.getElementById("mission-body").innerHTML = "";
+}
+
+function buildDashboardMissionHtml(mission) {
+  if (!mission) {
+    return `
+      <div class="dashboard-mission mission-item status-complete">
+        <div class="mission-item-head">
+          <strong class="mission-title">All missions complete.</strong>
+          <span class="badge">COMPLETE</span>
+        </div>
+        <p class="mission-desc">Awaiting extraction protocol.</p>
+      </div>`;
+  }
+
+  const status = GAME_STATE.missions[mission.id] || "active";
+  const imageBlock = mission.image
+    ? `
+        <div class="mission-image-wrap">
+          <img class="mission-image" src="${escapeHtml(mission.image)}"
+               alt="Search area clue for ${escapeHtml(mission.title)}"
+               onerror="this.closest('.mission-image-wrap').classList.add('asset-missing')" />
+        </div>`
+    : "";
+
+  return `
+    <div class="dashboard-mission mission-item status-${status}">
+      <div class="mission-item-head">
+        <strong class="mission-title">${escapeHtml(mission.title)}</strong>
+        <span class="badge">${status.toUpperCase()}</span>
+      </div>
+      <p class="mission-desc">${escapeHtml(mission.description)}</p>
+      <p class="mission-objective">
+        <span class="mission-objective-bullet" aria-hidden="true"></span>
+        <span class="mission-objective-text">
+          <span class="mission-objective-label">OBJECTIVE</span>
+          ${escapeHtml(mission.objective)}
+        </span>
+      </p>
+      ${imageBlock}
+    </div>`;
 }
 
 async function blinkCursor(element, times = 3) {
@@ -303,24 +343,6 @@ function animateBootProgress(duration = 3000) {
   });
 }
 
-function getDashboardMissionContent() {
-  const activeMission = getActiveMission();
-
-  if (!activeMission) {
-    return {
-      title: "All missions complete.",
-      description: "Awaiting extraction protocol.",
-      objective: ""
-    };
-  }
-
-  return {
-    title: activeMission.title,
-    description: activeMission.description,
-    objective: `Objective: ${activeMission.objective}`
-  };
-}
-
 async function runDashboardReveal() {
   resetInitTargets();
 
@@ -354,12 +376,9 @@ async function runDashboardReveal() {
   // 6. Flicker reveal mission panel (heading + frame; body stays hidden)
   await flickerReveal(missionPanel);
 
-  // 7. Typewriter mission body text
-  const content = getDashboardMissionContent();
-  const missionText = [content.title, content.description, content.objective]
-    .filter(Boolean)
-    .join("\n");
-  await typewriter(missionBody, missionText, 40);
+  // 7. Reveal active mission details (title, status, clue image, objective)
+  missionBody.innerHTML = buildDashboardMissionHtml(getActiveMission());
+  await flickerReveal(missionBody);
 
   // 8. Flicker reveal remaining page content
   await flickerReveal(qrPanel);
@@ -600,6 +619,42 @@ function acceptMission() {
   startGame();
 }
 
+// Debug shortcut: jump straight to a fully-loaded dashboard, bypassing the
+// briefing and all boot/initialize animations.
+function skipToDashboard() {
+  stopLoadingSound();
+  booting = false;
+
+  ["menu-screen", "briefing-screen"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove("active");
+      el.classList.add("hidden");
+    }
+  });
+
+  const mainScreen = document.getElementById("main-screen");
+  mainScreen.classList.remove("hidden", "booting");
+  mainScreen.classList.add("active", "boot-complete");
+
+  const loader = document.getElementById("boot-loader");
+  if (loader) loader.classList.add("hidden");
+
+  document.querySelectorAll(".init-target").forEach(el => {
+    el.classList.remove(
+      "init-hidden",
+      "reveal-flicker",
+      "reveal-flicker-fast",
+      "typing",
+      "cursor-blink"
+    );
+    el.classList.add("revealed");
+  });
+
+  showScreen("dashboard");
+  render();
+}
+
 async function startGame() {
   if (booting) return;
   await warmUpAudio();
@@ -705,12 +760,8 @@ function renderDashboard() {
   const mainScreen = document.getElementById("main-screen");
   if (!mainScreen.classList.contains("boot-complete")) return;
 
-  const content = getDashboardMissionContent();
-  const missionText = [content.title, content.description, content.objective]
-    .filter(Boolean)
-    .join("\n");
-
-  document.getElementById("mission-body").textContent = missionText;
+  document.getElementById("mission-body").innerHTML =
+    buildDashboardMissionHtml(getActiveMission());
   document.getElementById("dashboard-title").textContent = "FIELD OPERATIONS DASHBOARD";
   document.getElementById("status").textContent =
     `EMBRYOS: ${GAME_STATE.player.embryosCollected.length}/10`;
@@ -1313,6 +1364,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }, { once: true });
   playBtn.addEventListener("click", onPlay);
   document.getElementById("accept-btn").addEventListener("click", acceptMission);
+  document.getElementById("skip-btn").addEventListener("click", skipToDashboard);
   setupButtonSounds();
 
   document.querySelectorAll(".nav-btn").forEach(btn => {

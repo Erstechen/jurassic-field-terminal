@@ -5,6 +5,7 @@
     "description": "Establish field terminal connection and locate the first cryo specimen.",
     "objective": "Scan the Brachiosaurus embryo QR at Site Entry Zone.",
     "embryo": "brachiosaurus",
+    "image": "./mission_images/mission_01.jpg",
     "status": "active"
   },
   "mission_02": {
@@ -13,6 +14,7 @@
     "description": "Brachiosaurus embryo secured. Armored herbivore signature detected in Sector B.",
     "objective": "Scan the Triceratops embryo QR code.",
     "embryo": "triceratops",
+    "image": "./mission_images/mission_02.jpg",
     "status": "locked"
   },
   "mission_03": {
@@ -21,6 +23,7 @@
     "description": "Triceratops secured. Large aquatic predator signature in river basin.",
     "objective": "Recover the Spinosaurus embryo.",
     "embryo": "spinosaurus",
+    "image": "./mission_images/mission_03.jpg",
     "status": "locked"
   },
   "mission_04": {
@@ -29,6 +32,7 @@
     "description": "Spinosaurus recovered. Massive terrestrial predator tracks crossing eastern ridge.",
     "objective": "Scan the Carcharodontosaurus embryo.",
     "embryo": "carcharodontosaurus",
+    "image": "./mission_images/mission_04.jpg",
     "status": "locked"
   },
   "mission_05": {
@@ -37,6 +41,7 @@
     "description": "Carcharodontosaurus contained. Apex predator bio-signature escalating nearby.",
     "objective": "Locate and scan the Tyrannosaurus embryo.",
     "embryo": "tyrannosaurus",
+    "image": "./mission_images/mission_05.jpg",
     "status": "locked"
   },
   "mission_06": {
@@ -45,6 +50,7 @@
     "description": "Tyrannosaurus secured. Unknown hybrid strain detected — proceed with extreme caution.",
     "objective": "Recover the Scorpios Rex embryo.",
     "embryo": "scorpios_rex",
+    "image": "./mission_images/mission_06.jpg",
     "status": "locked"
   },
   "mission_07": {
@@ -53,6 +59,7 @@
     "description": "Scorpios Rex specimen stabilized. Aggressive carnivore movement near southern fence.",
     "objective": "Scan the Carnotaurus embryo (designate: Toro).",
     "embryo": "carnotaurus",
+    "image": "./mission_images/mission_07.jpg",
     "status": "locked"
   },
   "mission_08": {
@@ -61,6 +68,7 @@
     "description": "Toro secured. Largest carnivore signature on record detected in deep sector.",
     "objective": "Locate the Giganotosaurus embryo.",
     "embryo": "giganotosaurus",
+    "image": "./mission_images/mission_08.jpg",
     "status": "locked"
   },
   "mission_09": {
@@ -69,6 +77,7 @@
     "description": "Giganotosaurus recovered. Coordinated pack signatures increasing in maintenance corridors.",
     "objective": "Scan the Velociraptor embryo.",
     "embryo": "velociraptor",
+    "image": "./mission_images/mission_09.jpg",
     "status": "locked"
   },
   "mission_10": {
@@ -77,6 +86,7 @@
     "description": "Velociraptor pack neutralized. Classified hybrid specimen remains at extraction coordinates.",
     "objective": "Recover the Mutadon embryo.",
     "embryo": "mutadon",
+    "image": "./mission_images/mission_10.jpg",
     "status": "locked"
   },
   "mission_11": {
@@ -85,6 +95,7 @@
     "description": "All embryos recovered. Initiate final extraction protocol.",
     "objective": "Proceed to extraction point for final event.",
     "embryo": null,
+    "image": null,
     "status": "locked"
   }
 }
