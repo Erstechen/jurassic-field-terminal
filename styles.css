@@ -265,6 +265,27 @@ body {
   transform: scale(0.97);
 }
 
+/* Debug-only shortcut straight to the dashboard. */
+.menu-skip-btn {
+  font-family: inherit;
+  font-size: 0.72em;
+  letter-spacing: 0.18em;
+  padding: 7px 16px;
+  margin-top: -8px;
+  color: #9fae9a;
+  background: rgba(10, 18, 12, 0.6);
+  border: 1px dashed rgba(159, 174, 154, 0.5);
+  border-radius: 3px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.menu-skip-btn:hover {
+  color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.7);
+}
+
 .menu-brand {
   display: flex;
   align-items: center;
@@ -615,6 +636,95 @@ button.danger {
   float: right;
   font-size: 0.75em;
   color: #888;
+}
+
+/* Dashboard active-mission card (inside #mission-body) */
+.dashboard-mission {
+  margin: 0;
+}
+
+.dashboard-mission .mission-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dashboard-mission .mission-item-head .badge {
+  float: none;
+}
+
+.dashboard-mission .mission-title {
+  font-size: 1.02em;
+  letter-spacing: 0.03em;
+}
+
+.mission-image-wrap {
+  margin: 18px auto 0;
+  max-width: min(100%, 380px);
+}
+
+.mission-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 340px;
+  object-fit: contain;
+}
+
+/* Hidden when the referenced image file is absent. */
+.mission-image-wrap.asset-missing {
+  display: none;
+}
+
+.mission-desc {
+  color: #ccc;
+  margin: 8px 0 0;
+}
+
+.mission-objective {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 18px 0 0;
+  font-size: 0.92em;
+  color: #b8c0b2;
+}
+
+.mission-objective-bullet {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 0.35em;
+  border-radius: 50%;
+  background: #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.75);
+  animation: objective-bullet-pulse 1.5s ease-in-out infinite;
+}
+
+.mission-objective-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mission-objective-label {
+  color: #d4af37;
+  letter-spacing: 0.12em;
+  font-size: 0.82em;
+  margin-right: 6px;
+}
+
+@keyframes objective-bullet-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.75);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.82);
+    box-shadow: 0 0 2px rgba(255, 152, 0, 0.35);
+  }
 }
 
 .embryo-slot {
@@ -1305,9 +1415,7 @@ button.danger {
 }
 
 #mission-body {
-  white-space: pre-line;
   margin-top: 8px;
-  color: #ccc;
   min-height: 1.2em;
 }
 
