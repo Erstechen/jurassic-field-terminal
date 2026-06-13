@@ -1,7 +1,7 @@
 Dino DB specimen files — one JSON per dinosaur (filename matches embryo id).
 
   brachiosaurus.json
-  triceratops.json
+  ceratosaurus.json
   spinosaurus.json
   ...
 

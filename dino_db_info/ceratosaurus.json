@@ -1,0 +1,37 @@
+{
+  "id": "ceratosaurus",
+  "summary": "Distinctive Late Jurassic carnivore identified by its nasal horn and paired brow horns. InGen's Ceratosaurus stock was monitored for territorial aggression in mixed-predator sectors.",
+  "stats": [
+    {
+      "label": "Period",
+      "value": "Late Jurassic"
+    },
+    {
+      "label": "Diet",
+      "value": "Carnivore"
+    },
+    {
+      "label": "Length",
+      "value": "~6 m"
+    },
+    {
+      "label": "Mass",
+      "value": "~1 t"
+    },
+    {
+      "label": "Threat Level",
+      "value": "High"
+    },
+    {
+      "label": "Embryo Contained",
+      "value": "True"
+    }
+  ],
+  "facts": [
+    "Prominent nasal horn and paired horns above the eyes — key field identifiers.",
+    "Row of osteoderms along the midline suggests armored display or defense.",
+    "Hunts along forest margins and riparian corridors.",
+    "Cryo embryo shows stable theropod marker integrity."
+  ],
+  "fieldNotes": "Maintain distance. Specimen may charge if cornered or if nasal horn display is triggered."
+}

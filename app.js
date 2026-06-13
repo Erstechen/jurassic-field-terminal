@@ -252,6 +252,26 @@ function resetInitTargets() {
   document.getElementById("mission-body").innerHTML = "";
 }
 
+function buildFieldAnalysisHtml(mission) {
+  if (!mission?.embryo || !mission.fieldAnalysis) return "";
+
+  const embryo = EMBRYO_DATA[mission.embryo];
+  const speciesName = (embryo?.name || mission.embryo).toUpperCase();
+  const { observation, searchHint } = mission.fieldAnalysis;
+
+  return `
+    <div class="field-analysis">
+      <div class="field-analysis-alert">DNA TRACE DETECTED</div>
+      <div class="field-analysis-species">
+        <span class="field-analysis-label">SPECIES:</span>
+        <span class="field-analysis-species-name">${escapeHtml(speciesName)}</span>
+      </div>
+      <div class="field-analysis-heading">FIELD ANALYSIS:</div>
+      <p class="field-analysis-observation">${escapeHtml(observation)}</p>
+      <p class="field-analysis-search">${escapeHtml(searchHint)}</p>
+    </div>`;
+}
+
 function buildDashboardMissionHtml(mission) {
   if (!mission) {
     return `
@@ -265,12 +285,21 @@ function buildDashboardMissionHtml(mission) {
   }
 
   const status = GAME_STATE.missions[mission.id] || "active";
+  const fieldAnalysis = buildFieldAnalysisHtml(mission);
   const imageBlock = mission.image
     ? `
         <div class="mission-image-wrap">
           <img class="mission-image" src="${escapeHtml(mission.image)}"
                alt="Search area clue for ${escapeHtml(mission.title)}"
                onerror="this.closest('.mission-image-wrap').classList.add('asset-missing')" />
+        </div>`
+    : "";
+
+  const intelRow = (fieldAnalysis || imageBlock)
+    ? `
+        <div class="mission-intel-row">
+          ${fieldAnalysis}
+          ${imageBlock}
         </div>`
     : "";
 
@@ -288,7 +317,7 @@ function buildDashboardMissionHtml(mission) {
           ${escapeHtml(mission.objective)}
         </span>
       </p>
-      ${imageBlock}
+      ${intelRow}
     </div>`;
 }
 

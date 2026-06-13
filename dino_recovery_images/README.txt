@@ -3,7 +3,7 @@ Dinosaur recovery images — shown on the Embryo Recovered overlay and the Dino 
 Place one PNG per specimen using these filenames:
 
   Brachiosaurus.png
-  Triceratops.png
+  Ceratosaurus.png
   Spinosaurus.png
   Carcharodontosaurus.png
   Tyrannosaurus.png

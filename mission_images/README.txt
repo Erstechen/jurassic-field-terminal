@@ -6,16 +6,16 @@ general area where that mission's embryo QR code is hidden.
 
 Expected filenames (referenced in data/missions.json):
 
-  mission_01.jpg  -> Site Entry Protocol (Brachiosaurus)
-  mission_02.jpg  -> Tri-Horn Extraction (Triceratops)
-  mission_03.jpg  -> River Basin Sweep (Spinosaurus)
-  mission_04.jpg  -> Shark-Tooth Pursuit (Carcharodontosaurus)
-  mission_05.jpg  -> King of the Kill Zone (Tyrannosaurus)
-  mission_06.jpg  -> Hybrid Containment (Scorpios Rex)
-  mission_07.jpg  -> Bull Run Protocol (Carnotaurus / Toro)
-  mission_08.jpg  -> Giant Recovery (Giganotosaurus)
-  mission_09.jpg  -> Pack Hunt Extraction (Velociraptor)
-  mission_10.jpg  -> Final Specimen (Mutadon)
+  mission_01.png  -> Site Entry Protocol (Brachiosaurus)
+  mission_02.png  -> Horned Hunter Extraction (Ceratosaurus)
+  mission_03.png  -> River Basin Sweep (Spinosaurus)
+  mission_04.png  -> Shark-Tooth Pursuit (Carcharodontosaurus)
+  mission_05.png  -> King of the Kill Zone (Tyrannosaurus)
+  mission_06.png  -> Hybrid Containment (Scorpios Rex)
+  mission_07.png  -> Bull Run Protocol (Carnotaurus / Toro)
+  mission_08.png  -> Giant Recovery (Giganotosaurus)
+  mission_09.png  -> Pack Hunt Extraction (Velociraptor)
+  mission_10.png  -> Final Specimen (Mutadon)
 
 Notes:
 - mission_11 (Cryo Extraction Complete) has no clue image (image: null).
