@@ -16,8 +16,8 @@ let briefingData = null;
 
 const GPS_SIGNALS = ["signal lost", "signal detected", "target nearby"];
 
-// Extraction finale countdown length (seconds). 60 = 1:00.
-const EXTRACTION_COUNTDOWN_SECONDS = 60;
+// Extraction finale countdown length (seconds). 120 = 2:00.
+const EXTRACTION_COUNTDOWN_SECONDS = 120;
 let finaleTimerId = null;
 let lastAlarmSecond = null;
 

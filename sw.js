@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v38";
+const CACHE_NAME = "jp-cache-v39";
 
 const CORE_ASSETS = [
   "./",
@@ -71,8 +71,7 @@ const AUDIO_ASSETS = [
 
 // Optional menu/title-screen art. Cached when present; missing files are ignored.
 const MENU_ASSETS = [
-  "./images/menu_bg.jpg",
-  "./images/jurassic_park_logo.png"
+  "./images/menu_bg.jpg"
 ];
 
 // Optional mission clue images. Cached when present; missing files are ignored.
