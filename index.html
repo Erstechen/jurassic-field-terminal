@@ -38,10 +38,12 @@
       </div>
 
       <button id="play-btn" class="menu-play-btn">PLAY</button>
-      <button id="skip-btn" class="menu-skip-btn">SKIP &raquo; DASHBOARD (DEBUG)</button>
+      <button id="skip-btn" class="menu-skip-btn hidden">SKIP &raquo; DASHBOARD (DEBUG)</button>
 
       <div class="menu-brand">
-        <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+        <button type="button" id="menu-dev-trigger" class="dev-unlock-trigger" aria-label="InGen">
+          <span class="ingen-logo ingen-logo-sm" role="img" aria-hidden="true"></span>
+        </button>
         <span class="menu-brand-text">INGEN // International Genetic Technologies, Inc.</span>
       </div>
     </div>
@@ -77,7 +79,9 @@
     <div class="frame-corner frame-corner-br"></div>
 
     <div class="brand-bar">
-      <span class="ingen-logo" role="img" aria-label="InGen"></span>
+      <button type="button" id="dashboard-dev-trigger" class="dev-unlock-trigger" aria-label="InGen">
+        <span class="ingen-logo" role="img" aria-hidden="true"></span>
+      </button>
       <div class="brand-bar-text">
         <span class="brand-bar-name">INGEN</span>
         <span class="brand-bar-sub">International Genetic Technologies</span>
@@ -120,12 +124,11 @@
         <h3>FIELD SCANNER</h3>
         <p class="scanner-prompt">Scan mission QR codes to recover specimens.</p>
         <button id="open-scanner-btn" class="scan-btn">SCAN QR CODE</button>
-        <details class="debug-panel">
-          <summary>Debug / Simulation</summary>
-          <textarea id="qrInput" placeholder='Paste QR JSON here, e.g. {"type":"embryo","id":"brachiosaurus","name":"Brachiosaurus","unlockMission":"mission_02","audioLog":"log_01"}'></textarea>
-          <button onclick="processQRInput()">SUBMIT JSON</button>
-        </details>
-        <button class="danger" onclick="resetGame()">RESET STATE</button>
+        <div id="debug-tools" class="debug-tools hidden">
+          <div class="debug-panel-label">Debug / Simulation</div>
+          <div id="debug-mission-buttons" class="debug-mission-buttons"></div>
+          <button class="danger" onclick="resetGame()">RESET STATE</button>
+        </div>
       </section>
 
       <div id="extraction-banner" class="extraction-banner hidden" role="status">

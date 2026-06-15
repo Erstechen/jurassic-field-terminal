@@ -265,7 +265,29 @@ body {
   transform: scale(0.97);
 }
 
-/* Debug-only shortcut straight to the dashboard. */
+/* Invisible tap target for hidden debug unlock (5× logo tap). */
+.dev-unlock-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dev-unlock-trigger:focus-visible {
+  outline: 1px dashed rgba(212, 175, 55, 0.45);
+  outline-offset: 3px;
+}
+
+.brand-bar .dev-unlock-trigger {
+  flex-shrink: 0;
+}
+
+/* Debug-only shortcut straight to the dashboard (hidden until logo unlock). */
 .menu-skip-btn {
   font-family: inherit;
   font-size: 0.72em;
@@ -1554,17 +1576,54 @@ button.danger {
   background: #2a2200;
 }
 
-.debug-panel {
+.debug-tools {
   margin-top: 14px;
   border-top: 1px solid #222;
   padding-top: 10px;
 }
 
-.debug-panel summary {
+.debug-panel-label {
+  font-size: 0.78em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9fae9a;
+  margin-bottom: 10px;
+}
+
+.debug-mission-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.debug-mission-btn {
+  font-family: inherit;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 8px 10px;
+  color: #c8cec4;
+  background: rgba(10, 18, 12, 0.7);
+  border: 1px solid #333;
+  border-radius: 3px;
   cursor: pointer;
-  color: #666;
-  font-size: 0.85em;
-  margin-bottom: 8px;
+}
+
+.debug-mission-btn:hover:not(:disabled) {
+  color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.debug-mission-btn.active:not(:disabled) {
+  border-color: #ff9800;
+  color: #f3d873;
+}
+
+.debug-mission-btn.complete,
+.debug-mission-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* Camera scanner overlay */

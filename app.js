@@ -2,6 +2,13 @@ let EMBRYO_DATA = {};
 let MISSION_DATA = {};
 let AUDIO_LOG_DATA = {};
 let DINO_DB_DATA = {};
+// Hidden debug unlock — tap the InGen logo 5 times (menu or dashboard brand bar).
+const DEV_TAP_COUNT = 5;
+const DEV_TAP_WINDOW_MS = 2500;
+const DEV_MENU_KEY = "dev_menu_unlock";
+const DEV_DASHBOARD_KEY = "dev_dashboard_unlock";
+const devTapState = { menu: { count: 0, timer: null }, dashboard: { count: 0, timer: null } };
+
 let booting = false;
 let selectedDinoId = null;
 let pendingFinale = false;
@@ -783,6 +790,7 @@ function render() {
   renderEmbryoVault();
   renderDinoDatabase();
   renderTrackingConsole();
+  renderDebugMissionButtons();
 }
 
 function renderDashboard() {
@@ -1010,7 +1018,7 @@ function handleQR(payload) {
   console.log("STATE AFTER:", structuredClone(GAME_STATE));
 }
 
-function collectEmbryo(id, payload) {
+function collectEmbryo(id, payload, { bypassOrder = false } = {}) {
   if (!id || GAME_STATE.embryos[id] === undefined) {
     showEventOverlay("INVALID SPECIMEN", `Unknown embryo: ${id}`);
     return;
@@ -1022,7 +1030,7 @@ function collectEmbryo(id, payload) {
   }
 
   const expectedId = getActiveMission()?.embryo;
-  if (expectedId && id !== expectedId) {
+  if (!bypassOrder && expectedId && id !== expectedId) {
     const expectedName = EMBRYO_DATA[expectedId]?.name || expectedId;
     showEventOverlay(
       "OUT OF SEQUENCE",
@@ -1356,15 +1364,92 @@ function hideFinaleOverlay() {
 
 window.triggerFinale = showExtractionFinale;
 
-window.processQRInput = function processQRInput() {
-  const input = document.getElementById("qrInput").value.trim();
+function isDashboardDebugUnlocked() {
+  return sessionStorage.getItem(DEV_DASHBOARD_KEY) === "1";
+}
 
-  try {
-    handleQR(parseQRCode(input));
-    document.getElementById("qrInput").value = "";
-  } catch (err) {
-    showEventOverlay("INVALID QR", "Could not parse JSON payload.");
+function revealMenuSkip() {
+  document.getElementById("skip-btn")?.classList.remove("hidden");
+}
+
+function revealDashboardDebug() {
+  const tools = document.getElementById("debug-tools");
+  if (tools) tools.classList.remove("hidden");
+  renderDebugMissionButtons();
+}
+
+function setupDevUnlock(triggerEl, key, storageKey, onUnlock) {
+  if (!triggerEl) return;
+
+  if (sessionStorage.getItem(storageKey) === "1") {
+    onUnlock();
+    return;
   }
+
+  triggerEl.addEventListener("click", () => {
+    const state = devTapState[key];
+    clearTimeout(state.timer);
+    state.count += 1;
+
+    if (state.count >= DEV_TAP_COUNT) {
+      sessionStorage.setItem(storageKey, "1");
+      state.count = 0;
+      onUnlock();
+      return;
+    }
+
+    state.timer = setTimeout(() => {
+      state.count = 0;
+    }, DEV_TAP_WINDOW_MS);
+  });
+}
+
+function renderDebugMissionButtons() {
+  const container = document.getElementById("debug-mission-buttons");
+  if (!container || !isDashboardDebugUnlocked()) return;
+
+  const missions = Object.values(MISSION_DATA)
+    .filter(mission => mission.embryo)
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  const activeEmbryo = getActiveMission()?.embryo;
+
+  container.innerHTML = missions.map(mission => {
+    const id = mission.embryo;
+    const meta = EMBRYO_DATA[id];
+    const name = meta?.name || id;
+    const collected = GAME_STATE.embryos[id] === "collected";
+    const active = id === activeEmbryo;
+    const label = mission.id.replace("mission_", "M") + ` — ${name}`;
+
+    return `
+      <button type="button"
+              class="debug-mission-btn${collected ? " complete" : ""}${active ? " active" : ""}"
+              ${collected ? "disabled" : ""}
+              onclick="debugCompleteEmbryo('${id}')">${escapeHtml(label)}</button>`;
+  }).join("");
+}
+
+window.debugCompleteEmbryo = function debugCompleteEmbryo(id) {
+  if (!isDashboardDebugUnlocked()) return;
+
+  const meta = EMBRYO_DATA[id];
+  if (!meta) return;
+
+  collectEmbryo(
+    id,
+    {
+      type: "embryo",
+      id,
+      name: meta.name,
+      unlockMission: meta.unlockMission,
+      audioLog: meta.audioLog
+    },
+    { bypassOrder: true }
+  );
+
+  saveState(GAME_STATE);
+  render();
 };
 
 window.resetGame = function resetGame() {
@@ -1394,6 +1479,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   playBtn.addEventListener("click", onPlay);
   document.getElementById("accept-btn").addEventListener("click", acceptMission);
   document.getElementById("skip-btn").addEventListener("click", skipToDashboard);
+  setupDevUnlock(
+    document.getElementById("menu-dev-trigger"),
+    "menu",
+    DEV_MENU_KEY,
+    revealMenuSkip
+  );
+  setupDevUnlock(
+    document.getElementById("dashboard-dev-trigger"),
+    "dashboard",
+    DEV_DASHBOARD_KEY,
+    revealDashboardDebug
+  );
   setupButtonSounds();
 
   document.querySelectorAll(".nav-btn").forEach(btn => {
