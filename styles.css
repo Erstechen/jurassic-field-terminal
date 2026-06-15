@@ -660,8 +660,16 @@ button.danger {
 }
 
 .mission-image-wrap {
-  margin: 18px auto 0;
-  max-width: min(100%, 380px);
+  margin: 0;
+  max-width: none;
+}
+
+.mission-intel-row .mission-image-wrap {
+  flex: 1 1 46%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mission-image {
@@ -680,6 +688,102 @@ button.danger {
 .mission-desc {
   color: #ccc;
   margin: 8px 0 0;
+}
+
+.mission-intel-row {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.mission-intel-row .field-analysis {
+  flex: 1 1 54%;
+  min-width: 0;
+  margin: 0;
+}
+
+.field-analysis {
+  padding: 14px 12px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-left: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), rgba(10, 18, 12, 0.4));
+}
+
+@media (max-width: 720px) {
+  .mission-intel-row {
+    flex-direction: column;
+  }
+
+  .mission-intel-row .field-analysis,
+  .mission-intel-row .mission-image-wrap {
+    flex-basis: auto;
+  }
+}
+
+/* Full width when clue image is absent or failed to load */
+.mission-intel-row:not(:has(.mission-image-wrap:not(.asset-missing))) .field-analysis {
+  flex: 1 1 100%;
+}
+
+.mission-intel-row:not(:has(.field-analysis)) .mission-image-wrap {
+  flex: 1 1 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.field-analysis-alert {
+  font-size: 0.74em;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  color: #ff9800;
+  text-shadow: 0 0 8px rgba(255, 152, 0, 0.45);
+  animation: field-analysis-pulse 2s ease-in-out infinite;
+}
+
+.field-analysis-species {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.field-analysis-label,
+.field-analysis-heading {
+  font-size: 0.78em;
+  letter-spacing: 0.22em;
+  color: #d4af37;
+  text-transform: uppercase;
+}
+
+.field-analysis-species-name {
+  font-size: 1.05em;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  color: #f3d873;
+}
+
+.field-analysis-heading {
+  margin-top: 14px;
+}
+
+.field-analysis-observation,
+.field-analysis-search {
+  margin: 10px 0 0;
+  line-height: 1.55;
+  color: #c8cec4;
+  white-space: pre-line;
+}
+
+.field-analysis-search {
+  color: #b8c0b2;
+  font-style: italic;
+}
+
+@keyframes field-analysis-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
 }
 
 .mission-objective {

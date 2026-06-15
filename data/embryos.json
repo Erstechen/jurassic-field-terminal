@@ -7,11 +7,11 @@
     "unlockMission": "mission_02",
     "audioLog": "log_01"
   },
-  "triceratops": {
-    "id": "triceratops",
-    "name": "Triceratops",
-    "species": "Triceratops horridus",
-    "image": "./dino_recovery_images/Triceratops.png",
+  "ceratosaurus": {
+    "id": "ceratosaurus",
+    "name": "Ceratosaurus",
+    "species": "Ceratosaurus nasicornis",
+    "image": "./dino_recovery_images/Ceratosaurus.png",
     "unlockMission": "mission_03",
     "audioLog": "log_02"
   },

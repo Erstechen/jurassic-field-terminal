@@ -7,15 +7,15 @@
   },
   "log_02": {
     "id": "log_02",
-    "title": "Armored Specimen",
+    "title": "Horned Predator",
     "file": "log_02.mp3",
-    "transcript": "Brachiosaurus secured. Triceratops herd located — approach from downwind."
+    "transcript": "Brachiosaurus secured. Ceratosaurus signature located in Sector B — maintain distance."
   },
   "log_03": {
     "id": "log_03",
     "title": "River Threat",
     "file": "log_03.mp3",
-    "transcript": "Triceratops recovered. Spinosaurus signature in river basin. Avoid water crossings."
+    "transcript": "Ceratosaurus recovered. Spinosaurus signature in river basin. Avoid water crossings."
   },
   "log_04": {
     "id": "log_04",

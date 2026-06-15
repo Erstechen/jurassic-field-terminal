@@ -2,7 +2,7 @@ const GM_COMMAND_KEY = "jp_gm_command";
 
 const EMBRYO_MISSIONS = {
   brachiosaurus: { unlockMission: "mission_02", audioLog: "log_01", name: "Brachiosaurus" },
-  triceratops: { unlockMission: "mission_03", audioLog: "log_02", name: "Triceratops" },
+  ceratosaurus: { unlockMission: "mission_03", audioLog: "log_02", name: "Ceratosaurus" },
   spinosaurus: { unlockMission: "mission_04", audioLog: "log_03", name: "Spinosaurus" },
   carcharodontosaurus: { unlockMission: "mission_05", audioLog: "log_04", name: "Carcharodontosaurus" },
   tyrannosaurus: { unlockMission: "mission_06", audioLog: "log_05", name: "Tyrannosaurus" },

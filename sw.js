@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v31";
+const CACHE_NAME = "jp-cache-v37";
 
 const CORE_ASSETS = [
   "./",
@@ -25,7 +25,7 @@ const CORE_ASSETS = [
 
 const DINO_DB_INFO = [
   "./dino_db_info/brachiosaurus.json",
-  "./dino_db_info/triceratops.json",
+  "./dino_db_info/ceratosaurus.json",
   "./dino_db_info/spinosaurus.json",
   "./dino_db_info/carcharodontosaurus.json",
   "./dino_db_info/tyrannosaurus.json",
@@ -38,7 +38,7 @@ const DINO_DB_INFO = [
 
 const DINO_RECOVERY_IMAGES = [
   "./dino_recovery_images/Brachiosaurus.png",
-  "./dino_recovery_images/Triceratops.png",
+  "./dino_recovery_images/Ceratosaurus.png",
   "./dino_recovery_images/Spinosaurus.png",
   "./dino_recovery_images/Carcharodontosaurus.png",
   "./dino_recovery_images/Tyrannosaurus.png",
@@ -77,16 +77,16 @@ const MENU_ASSETS = [
 
 // Optional mission clue images. Cached when present; missing files are ignored.
 const MISSION_IMAGES = [
-  "./mission_images/mission_01.jpg",
-  "./mission_images/mission_02.jpg",
-  "./mission_images/mission_03.jpg",
-  "./mission_images/mission_04.jpg",
-  "./mission_images/mission_05.jpg",
-  "./mission_images/mission_06.jpg",
-  "./mission_images/mission_07.jpg",
-  "./mission_images/mission_08.jpg",
-  "./mission_images/mission_09.jpg",
-  "./mission_images/mission_10.jpg"
+  "./mission_images/mission_01.png",
+  "./mission_images/mission_02.png",
+  "./mission_images/mission_03.png",
+  "./mission_images/mission_04.png",
+  "./mission_images/mission_05.png",
+  "./mission_images/mission_06.png",
+  "./mission_images/mission_07.png",
+  "./mission_images/mission_08.png",
+  "./mission_images/mission_09.png",
+  "./mission_images/mission_10.png"
 ];
 
 self.addEventListener("install", event => {

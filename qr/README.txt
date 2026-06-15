@@ -4,7 +4,7 @@ Each JSON file is the exact content to encode into a QR code (plain text, not UR
 
 Embryo codes (main scavenger hunt — mission order):
   1. brachiosaurus.json
-  2. triceratops.json
+  2. ceratosaurus.json
   3. spinosaurus.json
   4. carcharodontosaurus.json
   5. tyrannosaurus.json

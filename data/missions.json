@@ -5,88 +5,128 @@
     "description": "Establish field terminal connection and locate the first cryo specimen.",
     "objective": "Scan the Brachiosaurus embryo QR at Site Entry Zone.",
     "embryo": "brachiosaurus",
-    "image": "./mission_images/mission_01.jpg",
+    "image": "./mission_images/mission_01.png",
+    "fieldAnalysis": {
+      "observation": "The specimen appears to prefer open areas with elevated foliage.",
+      "searchHint": "Search locations with open areas and trees a tall herbivore could feed."
+    },
     "status": "active"
   },
   "mission_02": {
     "id": "mission_02",
-    "title": "Tri-Horn Extraction",
-    "description": "Brachiosaurus embryo secured. Armored herbivore signature detected in Sector B.",
-    "objective": "Scan the Triceratops embryo QR code.",
-    "embryo": "triceratops",
-    "image": "./mission_images/mission_02.jpg",
+    "title": "Horned Hunter Extraction",
+    "description": "Ceratosaurus predator signature detected in Sector B.",
+    "objective": "Scan the Ceratosaurus embryo QR code.",
+    "embryo": "ceratosaurus",
+    "image": "./mission_images/mission_02.png",
+    "fieldAnalysis": {
+      "observation": "Trace markers indicate a horned carnivore patrolling forest margins and riparian corridors.",
+      "searchHint": "Search locations where a mid-size predator could ambush prey near cover and water."
+    },
     "status": "locked"
   },
   "mission_03": {
     "id": "mission_03",
     "title": "River Basin Sweep",
-    "description": "Triceratops secured. Large aquatic predator signature in river basin.",
+    "description": "Large aquatic predator signature in sunken river basin.",
     "objective": "Recover the Spinosaurus embryo.",
     "embryo": "spinosaurus",
-    "image": "./mission_images/mission_03.jpg",
+    "image": "./mission_images/mission_03.png",
+    "fieldAnalysis": {
+      "observation": "Bio-signatures are concentrated along sunken freshwater channels and river basin runoff.",
+      "searchHint": "Search locations adjacent to sunken water where a large aquatic predator could hunt."
+    },
     "status": "locked"
   },
   "mission_04": {
     "id": "mission_04",
     "title": "Shark-Tooth Pursuit",
-    "description": "Spinosaurus recovered. Massive terrestrial predator tracks crossing eastern ridge.",
+    "description": "Massive terrestrial predator tracks crossing eastern ridge.",
     "objective": "Scan the Carcharodontosaurus embryo.",
     "embryo": "carcharodontosaurus",
-    "image": "./mission_images/mission_04.jpg",
+    "image": "./mission_images/mission_04.png",
+    "fieldAnalysis": {
+      "observation": "Heavy predator tracks suggest wide-ranging patrols across open ridge terrain.",
+      "searchHint": "Search elevated routes and ridge crossings where a massive carnivore could stalk prey."
+    },
     "status": "locked"
   },
   "mission_05": {
     "id": "mission_05",
     "title": "King of the Kill Zone",
-    "description": "Carcharodontosaurus contained. Apex predator bio-signature escalating nearby.",
+    "description": "Apex predator bio-signature escalating nearby.",
     "objective": "Locate and scan the Tyrannosaurus embryo.",
     "embryo": "tyrannosaurus",
-    "image": "./mission_images/mission_05.jpg",
+    "image": "./mission_images/mission_05.png",
+    "fieldAnalysis": {
+      "observation": "Dominance markers and kill-zone scent trails indicate an apex predator holding territory.",
+      "searchHint": "Search locations with recent carcass activity or territorial boundary markers."
+    },
     "status": "locked"
   },
   "mission_06": {
     "id": "mission_06",
     "title": "Hybrid Containment",
-    "description": "Tyrannosaurus secured. Unknown hybrid strain detected — proceed with extreme caution.",
+    "description": "Unknown hybrid strain detected — proceed with extreme caution.",
     "objective": "Recover the Scorpios Rex embryo.",
     "embryo": "scorpios_rex",
-    "image": "./mission_images/mission_06.jpg",
+    "image": "./mission_images/mission_06.png",
+    "fieldAnalysis": {
+      "observation": "Anomalous hybrid strain readings show erratic movement through dense cover and ruins.",
+      "searchHint": "Search isolated structures and overgrown sectors where an unstable hybrid could hide."
+    },
     "status": "locked"
   },
   "mission_07": {
     "id": "mission_07",
     "title": "Bull Run Protocol",
-    "description": "Scorpios Rex specimen stabilized. Aggressive carnivore movement near southern fence.",
+    "description": "Aggressive carnivore movement near southern fence.",
     "objective": "Scan the Carnotaurus embryo (designate: Toro).",
     "embryo": "carnotaurus",
-    "image": "./mission_images/mission_07.jpg",
+    "image": "./mission_images/mission_07.png",
+    "fieldAnalysis": {
+      "observation": "High-speed burst signatures detected along fence lines and open sprint corridors.",
+      "searchHint": "Search long sightlines and perimeter paths where a bull predator could charge."
+    },
     "status": "locked"
   },
   "mission_08": {
     "id": "mission_08",
     "title": "Giant Recovery",
-    "description": "Toro secured. Largest carnivore signature on record detected in deep sector.",
+    "description": "Largest carnivore signature on record detected in deep sector.",
     "objective": "Locate the Giganotosaurus embryo.",
     "embryo": "giganotosaurus",
-    "image": "./mission_images/mission_08.jpg",
+    "image": "./mission_images/mission_08.png",
+    "fieldAnalysis": {
+      "observation": "Seismic footfall patterns suggest a colossal carnivore moving through deep sector jungle.",
+      "searchHint": "Search wide clearings and heavy-traffic game trails large enough for a giant predator."
+    },
     "status": "locked"
   },
   "mission_09": {
     "id": "mission_09",
     "title": "Pack Hunt Extraction",
-    "description": "Giganotosaurus recovered. Coordinated pack signatures increasing in maintenance corridors.",
+    "description": "Coordinated pack signatures increasing in maintenance corridors.",
     "objective": "Scan the Velociraptor embryo.",
     "embryo": "velociraptor",
-    "image": "./mission_images/mission_09.jpg",
+    "image": "./mission_images/mission_09.png",
+    "fieldAnalysis": {
+      "observation": "Coordinated pack signatures are clustering in narrow corridors and enclosed routes.",
+      "searchHint": "Search maintenance paths and choke points where a raptor pack could coordinate a hunt."
+    },
     "status": "locked"
   },
   "mission_10": {
     "id": "mission_10",
     "title": "Final Specimen",
-    "description": "Velociraptor pack neutralized. Classified hybrid specimen remains at extraction coordinates.",
+    "description": "Classified hybrid specimen remains.",
     "objective": "Recover the Mutadon embryo.",
     "embryo": "mutadon",
-    "image": "./mission_images/mission_10.jpg",
+    "image": "./mission_images/mission_10.png",
+    "fieldAnalysis": {
+      "observation": "Classified hybrid trace readings are unstable and shifting near high-security sectors.",
+      "searchHint": "Search restricted coordinates and containment-adjacent zones for the final specimen."
+    },
     "status": "locked"
   },
   "mission_11": {

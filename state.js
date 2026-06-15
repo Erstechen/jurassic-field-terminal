@@ -7,7 +7,7 @@ const defaultState = {
   },
   embryos: {
     brachiosaurus: "locked",
-    triceratops: "locked",
+    ceratosaurus: "locked",
     spinosaurus: "locked",
     carcharodontosaurus: "locked",
     tyrannosaurus: "locked",
@@ -39,7 +39,7 @@ function migrateState(raw) {
 
   if (raw.player && raw.embryos && raw.missions) {
     const merged = { ...structuredClone(defaultState), ...raw };
-    const legacyIdMap = { trex: "tyrannosaurus" };
+    const legacyIdMap = { trex: "tyrannosaurus", triceratops: "ceratosaurus" };
     const embryos = structuredClone(defaultState.embryos);
     const collected = [];
 
