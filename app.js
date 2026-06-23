@@ -813,7 +813,7 @@ function render() {
   renderEmbryoVault();
   renderDinoDatabase();
   renderTrackingConsole();
-  renderDebugMissionButtons();
+  renderDebugPanel();
 }
 
 function renderDashboard() {
@@ -1169,10 +1169,19 @@ function showPuzzleOverlay(puzzle) {
   const puzzleType = puzzle.type || "text";
   const isInteractive = puzzleType === "slide" || puzzleType === "gears" || puzzleType === "cipher";
 
-  document.getElementById("puzzle-subtitle").textContent = puzzle.subtitle || "";
+  const subtitleEl = document.getElementById("puzzle-subtitle");
+  subtitleEl.textContent = puzzle.subtitle || "";
+  subtitleEl.classList.toggle("hidden", !puzzle.subtitle);
+
   document.getElementById("puzzle-title").textContent = puzzle.title || "Security Override";
-  document.getElementById("puzzle-intro").textContent = puzzle.intro || "";
-  document.getElementById("puzzle-body").textContent = puzzle.puzzleBody || "";
+
+  const introEl = document.getElementById("puzzle-intro");
+  introEl.textContent = puzzle.intro || "";
+  introEl.classList.toggle("hidden", !puzzle.intro);
+
+  const bodyEl = document.getElementById("puzzle-body");
+  bodyEl.textContent = puzzle.puzzleBody || "";
+  bodyEl.classList.toggle("hidden", !puzzle.puzzleBody);
 
   const textControls = document.getElementById("puzzle-text-controls");
   const interactiveEl = document.getElementById("puzzle-interactive");
@@ -1220,6 +1229,7 @@ function markPuzzleSolved(puzzle) {
   saveState(GAME_STATE);
   PuzzleEngine.unmount();
   showPuzzleSolvedView(puzzle);
+  renderDebugPuzzleButtons();
 }
 
 function showPuzzleSolvedView(puzzle) {
@@ -1570,7 +1580,7 @@ function revealMenuSkip() {
 function revealDashboardDebug() {
   const tools = document.getElementById("debug-tools");
   if (tools) tools.classList.remove("hidden");
-  renderDebugMissionButtons();
+  renderDebugPanel();
 }
 
 function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true } = {}) {
@@ -1715,6 +1725,11 @@ async function bootApp() {
   }
 }
 
+function renderDebugPanel() {
+  renderDebugMissionButtons();
+  renderDebugPuzzleButtons();
+}
+
 function renderDebugMissionButtons() {
   const container = document.getElementById("debug-mission-buttons");
   if (!container || !isDashboardDebugUnlocked()) return;
@@ -1740,6 +1755,28 @@ function renderDebugMissionButtons() {
               onclick="debugCompleteEmbryo('${id}')">${escapeHtml(label)}</button>`;
   }).join("");
 }
+
+function renderDebugPuzzleButtons() {
+  const container = document.getElementById("debug-puzzle-buttons");
+  if (!container || !isDashboardDebugUnlocked()) return;
+
+  const ids = ["puzzle_01", "puzzle_02"];
+  container.innerHTML = ids.map(id => {
+    const puzzle = PUZZLE_DATA[id];
+    if (!puzzle) return "";
+
+    const solved = GAME_STATE.puzzles[id] === true;
+    return `
+      <button type="button"
+              class="debug-mission-btn${solved ? " complete" : ""}"
+              onclick="debugOpenPuzzle('${id}')">${escapeHtml(puzzle.title)}</button>`;
+  }).join("");
+}
+
+window.debugOpenPuzzle = function debugOpenPuzzle(id) {
+  if (!isDashboardDebugUnlocked()) return;
+  handlePuzzle(id);
+};
 
 window.debugCompleteEmbryo = function debugCompleteEmbryo(id) {
   if (!isDashboardDebugUnlocked()) return;

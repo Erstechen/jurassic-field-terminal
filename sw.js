@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v50";
+const CACHE_NAME = "jp-cache-v53";
 
 const CORE_ASSETS = [
   "./",

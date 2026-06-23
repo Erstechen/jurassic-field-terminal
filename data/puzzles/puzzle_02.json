@@ -2,19 +2,17 @@
   "id": "puzzle_02",
   "type": "cipher",
   "title": "Containment Lock Beta",
-  "subtitle": "ENCRYPTED OVERRIDE // PUZZLE TWO",
-  "intro": "Dr. Wu's backup lock channel was intercepted. The transmission references raptor containment — decode it before the network fails completely.",
-  "puzzleBody": "DECRYPTION PROTOCOL\n━━━━━━━━━━━━━━━━━━━━\n• Wu used a shift cipher: every letter was moved forward in the alphabet to encrypt the message.\n• To decrypt, shift each letter backward by the same amount.\n• The shift key equals how many raptors hunted the kids in the Jurassic Park kitchen scene.\n• Write out the decoded message on paper — the lock combination is hidden inside it.\n• Enter only the four digits when you find them.",
+  "puzzleBody": "Shift each letter backward. Key = raptors in the Jurassic Park kitchen scene. Enter the four digits from the decoded message.",
   "cipher": {
     "ciphertext": "VJGNQEMEQFGKUHQWTVYQHKXGVYQ",
-    "label": "INTERCEPTED TRANSMISSION // SHIFT ENCODED",
+    "label": "ENCRYPTED MESSAGE",
     "showAlphabet": true
   },
   "answer": "4252",
   "acceptAnswers": ["4252", "four two five two", "4 2 5 2", "4-2-5-2"],
-  "answerLabel": "ENTER LOCK COMBINATION (DIGITS)",
+  "answerLabel": "LOCK CODE",
   "lockCode": "4252",
   "lockCodeLabel": "LOCK COMBINATION",
   "requiredEmbryosMin": 0,
-  "solvedMessage": "Transmission decoded. Use this combination on Containment Lock Beta."
+  "solvedMessage": "Use this code on the lock."
 }
