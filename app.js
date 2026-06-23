@@ -1275,26 +1275,22 @@ function normalizeCipherAnswer(value, puzzle) {
 }
 
 function puzzleAnswerMatches(puzzle, rawValue) {
-  const candidates = new Set();
-  const primary = puzzle.type === "cipher"
+  const normalized = puzzle.type === "cipher"
     ? normalizeCipherAnswer(rawValue, puzzle)
     : normalizePuzzleAnswer(rawValue, puzzle);
-  candidates.add(primary);
 
-  const alternates = puzzle.acceptAnswers || [];
-  alternates.forEach(alt => {
-    candidates.add(
-      puzzle.type === "cipher"
-        ? normalizeCipherAnswer(alt, puzzle)
-        : normalizePuzzleAnswer(alt, puzzle)
-    );
-  });
+  if (!normalized) return false;
 
-  const expected = puzzle.type === "cipher"
-    ? normalizeCipherAnswer(puzzle.answer, puzzle)
-    : normalizePuzzleAnswer(puzzle.answer, puzzle);
+  const accepted = [
+    puzzle.answer,
+    ...(puzzle.acceptAnswers || [])
+  ].map(alt =>
+    puzzle.type === "cipher"
+      ? normalizeCipherAnswer(alt, puzzle)
+      : normalizePuzzleAnswer(alt, puzzle)
+  );
 
-  return candidates.has(expected);
+  return accepted.includes(normalized);
 }
 
 function submitPuzzleAnswer() {
