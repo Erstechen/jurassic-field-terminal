@@ -31,7 +31,7 @@ body {
     transparent 3px
   );
   opacity: 0.3;
-  z-index: 1000;
+  z-index: 1;
 }
 
 #boot-screen {
@@ -127,6 +127,7 @@ body {
   border-bottom: 1px solid rgba(255, 152, 0, 0.25);
   padding: 6px 0;
   margin: 0 36px;
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -276,6 +277,10 @@ body {
   background: transparent;
   cursor: default;
   -webkit-tap-highlight-color: transparent;
+}
+
+.dev-unlock-trigger .ingen-logo {
+  pointer-events: none;
 }
 
 .dev-unlock-trigger:focus-visible {
@@ -443,6 +448,8 @@ body {
 
 /* Main screen brand bar */
 .brand-bar {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -527,6 +534,8 @@ header {
 }
 
 .nav-bar {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;

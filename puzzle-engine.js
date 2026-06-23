@@ -303,3 +303,5 @@ const PuzzleEngine = (() => {
 
   return { mount, unmount };
 })();
+
+window.PuzzleEngine = PuzzleEngine;

@@ -1663,13 +1663,23 @@ window.addEventListener("storage", event => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   initAudioSystem().catch(() => {});
+
   const playBtn = document.getElementById("play-btn");
-  playBtn.addEventListener("pointerdown", () => {
-    warmUpAudio().catch(() => {});
-  }, { once: true });
-  playBtn.addEventListener("click", onPlay);
-  document.getElementById("accept-btn").addEventListener("click", acceptMission);
-  document.getElementById("skip-btn").addEventListener("click", skipToDashboard);
+  if (playBtn) {
+    playBtn.addEventListener("pointerdown", () => {
+      warmUpAudio().catch(() => {});
+    }, { once: true });
+    playBtn.addEventListener("click", onPlay);
+  } else {
+    console.error("Missing #play-btn — stale cache or incomplete index.html");
+  }
+
+  const acceptBtn = document.getElementById("accept-btn");
+  if (acceptBtn) acceptBtn.addEventListener("click", acceptMission);
+
+  const skipBtn = document.getElementById("skip-btn");
+  if (skipBtn) skipBtn.addEventListener("click", skipToDashboard);
+
   setupDevUnlock(
     document.getElementById("menu-dev-trigger"),
     "menu",
@@ -1695,13 +1705,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => showScreen(btn.dataset.screen));
   });
 
-  document.getElementById("dismiss-overlay").addEventListener("click", dismissEventOverlay);
-  document.getElementById("finale-dismiss").addEventListener("click", hideFinaleOverlay);
-  document.getElementById("puzzle-submit").addEventListener("click", submitPuzzleAnswer);
-  document.getElementById("puzzle-dismiss").addEventListener("click", hidePuzzleOverlay);
-  document.getElementById("puzzle-answer-input").addEventListener("keydown", event => {
-    if (event.key === "Enter") submitPuzzleAnswer();
-  });
+  const dismissOverlay = document.getElementById("dismiss-overlay");
+  if (dismissOverlay) dismissOverlay.addEventListener("click", dismissEventOverlay);
+
+  const finaleDismiss = document.getElementById("finale-dismiss");
+  if (finaleDismiss) finaleDismiss.addEventListener("click", hideFinaleOverlay);
+
+  const puzzleSubmit = document.getElementById("puzzle-submit");
+  if (puzzleSubmit) puzzleSubmit.addEventListener("click", submitPuzzleAnswer);
+
+  const puzzleDismiss = document.getElementById("puzzle-dismiss");
+  if (puzzleDismiss) puzzleDismiss.addEventListener("click", hidePuzzleOverlay);
+
+  const puzzleInput = document.getElementById("puzzle-answer-input");
+  if (puzzleInput) {
+    puzzleInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") submitPuzzleAnswer();
+    });
+  }
 
   await loadGameData();
   render();
@@ -1713,9 +1734,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     showExtractionFinale();
   }
 
+  const isLocalDev =
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.hostname === "[::1]";
+
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").catch(err => {
-      console.warn("Service worker registration failed:", err);
-    });
+    if (isLocalDev) {
+      // Avoid stale offline cache breaking local testing.
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => reg.unregister());
+      }).catch(() => {});
+    } else {
+      navigator.serviceWorker.register("./sw.js").catch(err => {
+        console.warn("Service worker registration failed:", err);
+      });
+    }
   }
 });
