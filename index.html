@@ -60,7 +60,9 @@
 
     <div class="briefing-content">
       <div class="briefing-header">
-        <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+        <button type="button" id="briefing-dev-trigger" class="dev-unlock-trigger" aria-label="InGen">
+          <span class="ingen-logo ingen-logo-sm" role="img" aria-hidden="true"></span>
+        </button>
         <span class="briefing-header-label">INCOMING TRANSMISSION // PRIORITY ONE</span>
       </div>
 
@@ -229,7 +231,43 @@
     </div>
   </div>
 
+  <div id="puzzle-overlay" class="puzzle-overlay hidden">
+    <div class="scanlines"></div>
+    <div class="frame-corner frame-corner-tl"></div>
+    <div class="frame-corner frame-corner-tr"></div>
+    <div class="frame-corner frame-corner-bl"></div>
+    <div class="frame-corner frame-corner-br"></div>
+
+    <div class="puzzle-inner">
+      <span class="ingen-logo ingen-logo-sm" role="img" aria-label="InGen"></span>
+      <div id="puzzle-subtitle" class="puzzle-subtitle"></div>
+      <h2 id="puzzle-title" class="puzzle-title"></h2>
+      <p id="puzzle-intro" class="puzzle-intro"></p>
+
+      <div id="puzzle-active" class="puzzle-active">
+        <div id="puzzle-body" class="puzzle-body"></div>
+        <div id="puzzle-interactive" class="puzzle-interactive hidden"></div>
+        <div id="puzzle-text-controls" class="puzzle-text-controls">
+          <label class="puzzle-answer-label" for="puzzle-answer-input">ENTER SOLUTION</label>
+          <input id="puzzle-answer-input" class="puzzle-answer-input" type="text" autocomplete="off" autocapitalize="characters" />
+          <button id="puzzle-submit" type="button">SUBMIT</button>
+        </div>
+        <p id="puzzle-error" class="puzzle-error hidden" role="alert">Incorrect solution. Try again.</p>
+      </div>
+
+      <div id="puzzle-solved" class="puzzle-solved hidden">
+        <p id="puzzle-solved-message" class="puzzle-solved-message"></p>
+        <div class="puzzle-lock-block">
+          <span id="puzzle-lock-label" class="puzzle-lock-label">LOCK COMBINATION</span>
+          <span id="puzzle-lock-code" class="puzzle-lock-code">----</span>
+        </div>
+        <button id="puzzle-dismiss" type="button">ACKNOWLEDGE</button>
+      </div>
+    </div>
+  </div>
+
   <script src="state.js"></script>
+  <script src="puzzle-engine.js"></script>
   <script src="lib/jsQR.js"></script>
   <script src="qr-scanner.js"></script>
   <script src="app.js"></script>

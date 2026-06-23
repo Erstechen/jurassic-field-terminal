@@ -21,4 +21,8 @@ Optional event codes:
   gps_signal_detected.json
   gps_target_nearby.json
 
+Lock puzzle codes (open in-app puzzle, reveal padlock combination on solve):
+  puzzle_lock_01.json  -> data/puzzles/puzzle_01.json
+  puzzle_lock_02.json  -> data/puzzles/puzzle_02.json
+
 Tip: Use minified single-line JSON when generating QRs to keep codes smaller and easier to scan.

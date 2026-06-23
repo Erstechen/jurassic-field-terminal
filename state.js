@@ -29,6 +29,10 @@ const defaultState = {
     finalEventTriggered: false,
     briefingComplete: false
   },
+  puzzles: {
+    puzzle_01: false,
+    puzzle_02: false
+  },
   extractionDeadline: null
 };
 
@@ -53,6 +57,7 @@ function migrateState(raw) {
 
     merged.embryos = embryos;
     merged.player.embryosCollected = [...new Set(collected)];
+    merged.puzzles = { ...structuredClone(defaultState.puzzles), ...(raw.puzzles || {}) };
     return merged;
   }
 

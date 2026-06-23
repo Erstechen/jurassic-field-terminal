@@ -2,12 +2,14 @@ let EMBRYO_DATA = {};
 let MISSION_DATA = {};
 let AUDIO_LOG_DATA = {};
 let DINO_DB_DATA = {};
-// Hidden debug unlock — tap the InGen logo 5 times (menu or dashboard brand bar).
-const DEV_TAP_COUNT = 5;
+let PUZZLE_DATA = {};
+let activePuzzleId = null;
+// Hidden debug unlock — tap the InGen logo 3 times (menu, briefing, or dashboard brand bar).
+const DEV_TAP_COUNT = 3;
 const DEV_TAP_WINDOW_MS = 2500;
 const DEV_MENU_KEY = "dev_menu_unlock";
 const DEV_DASHBOARD_KEY = "dev_dashboard_unlock";
-const devTapState = { menu: { count: 0, timer: null }, dashboard: { count: 0, timer: null } };
+const devTapState = { menu: { count: 0, timer: null }, dashboard: { count: 0, timer: null }, briefing: { count: 0, timer: null } };
 
 let booting = false;
 let selectedDinoId = null;
@@ -746,6 +748,23 @@ async function loadGameData() {
   AUDIO_LOG_DATA = audioLogs;
   await loadDinoDbData();
   await loadBriefingData();
+  await loadPuzzleData();
+}
+
+async function loadPuzzleData() {
+  const ids = ["puzzle_01", "puzzle_02"];
+  const results = await Promise.all(
+    ids.map(id =>
+      fetch(`./data/puzzles/${id}.json`)
+        .then(r => (r.ok ? r.json() : null))
+        .catch(() => null)
+    )
+  );
+
+  PUZZLE_DATA = {};
+  ids.forEach((id, i) => {
+    if (results[i]) PUZZLE_DATA[id] = results[i];
+  });
 }
 
 async function loadBriefingData() {
@@ -1009,6 +1028,9 @@ function handleQR(payload) {
     case "event":
       handleEvent(payload);
       break;
+    case "puzzle":
+      handlePuzzle(payload.puzzleId);
+      break;
     default:
       showEventOverlay("UNKNOWN QR", `Unsupported type: ${payload.type}`);
   }
@@ -1114,6 +1136,175 @@ function handleEvent(payload) {
   }
 
   showEventOverlay("EVENT TRIGGERED", payload.eventId || "Unknown event");
+}
+
+function handlePuzzle(puzzleId) {
+  const puzzle = PUZZLE_DATA[puzzleId];
+  if (!puzzle) {
+    showEventOverlay("INVALID PUZZLE", `Unknown puzzle: ${puzzleId || "missing id"}`);
+    return;
+  }
+
+  const minEmbryos = puzzle.requiredEmbryosMin || 0;
+  const collected = GAME_STATE.player.embryosCollected.length;
+  if (collected < minEmbryos) {
+    showEventOverlay(
+      "ACCESS DENIED",
+      `Collect at least ${minEmbryos} embryos before attempting this override. (${collected}/${minEmbryos})`
+    );
+    return;
+  }
+
+  showPuzzleOverlay(puzzle);
+}
+
+function showPuzzleOverlay(puzzle) {
+  activePuzzleId = puzzle.id;
+  const overlay = document.getElementById("puzzle-overlay");
+  const solved = GAME_STATE.puzzles[puzzle.id] === true;
+  const puzzleType = puzzle.type || "text";
+  const isInteractive = puzzleType === "slide" || puzzleType === "gears" || puzzleType === "cipher";
+
+  document.getElementById("puzzle-subtitle").textContent = puzzle.subtitle || "";
+  document.getElementById("puzzle-title").textContent = puzzle.title || "Security Override";
+  document.getElementById("puzzle-intro").textContent = puzzle.intro || "";
+  document.getElementById("puzzle-body").textContent = puzzle.puzzleBody || "";
+
+  const textControls = document.getElementById("puzzle-text-controls");
+  const interactiveEl = document.getElementById("puzzle-interactive");
+  textControls.classList.toggle("hidden", isInteractive && puzzleType !== "cipher");
+  interactiveEl.classList.toggle("hidden", !isInteractive);
+
+  const answerLabel = document.querySelector("#puzzle-text-controls .puzzle-answer-label");
+  if (answerLabel) {
+    answerLabel.textContent = puzzle.answerLabel || "ENTER SOLUTION";
+  }
+
+  if (solved) {
+    PuzzleEngine.unmount();
+    showPuzzleSolvedView(puzzle);
+  } else {
+    document.getElementById("puzzle-active").classList.remove("hidden");
+    document.getElementById("puzzle-solved").classList.add("hidden");
+    document.getElementById("puzzle-error").classList.add("hidden");
+
+    if (isInteractive) {
+      const input = document.getElementById("puzzle-answer-input");
+      input.value = "";
+      input.classList.remove("puzzle-shake");
+      PuzzleEngine.mount(interactiveEl, puzzle, {
+        onSolved: () => markPuzzleSolved(puzzle)
+      });
+      if (puzzleType === "cipher") {
+        setTimeout(() => input.focus(), 100);
+      }
+    } else {
+      PuzzleEngine.unmount();
+      interactiveEl.innerHTML = "";
+      const input = document.getElementById("puzzle-answer-input");
+      input.value = "";
+      input.classList.remove("puzzle-shake");
+      setTimeout(() => input.focus(), 100);
+    }
+  }
+
+  overlay.classList.remove("hidden");
+}
+
+function markPuzzleSolved(puzzle) {
+  GAME_STATE.puzzles[puzzle.id] = true;
+  saveState(GAME_STATE);
+  PuzzleEngine.unmount();
+  showPuzzleSolvedView(puzzle);
+}
+
+function showPuzzleSolvedView(puzzle) {
+  document.getElementById("puzzle-active").classList.add("hidden");
+  document.getElementById("puzzle-solved").classList.remove("hidden");
+  document.getElementById("puzzle-solved-message").textContent =
+    puzzle.solvedMessage || "Override accepted. Use this combination on the lock.";
+  document.getElementById("puzzle-lock-label").textContent =
+    puzzle.lockCodeLabel || "LOCK COMBINATION";
+  document.getElementById("puzzle-lock-code").textContent = puzzle.lockCode || "----";
+}
+
+function normalizePuzzleAnswer(value, puzzle) {
+  let answer = String(value ?? "");
+  if (puzzle.trimAnswer !== false) answer = answer.trim();
+  if (!puzzle.caseSensitive) answer = answer.toLowerCase();
+  return answer;
+}
+
+function normalizeCipherAnswer(value, puzzle) {
+  const wordDigits = {
+    zero: "0",
+    one: "1",
+    two: "2",
+    three: "3",
+    four: "4",
+    five: "5",
+    six: "6",
+    seven: "7",
+    eight: "8",
+    nine: "9"
+  };
+
+  let answer = normalizePuzzleAnswer(value, puzzle);
+  let expanded = ` ${answer} `;
+  Object.entries(wordDigits).forEach(([word, digit]) => {
+    expanded = expanded.split(` ${word} `).join(` ${digit} `);
+  });
+  expanded = expanded.trim().replace(/\s+/g, " ");
+  const digitsOnly = expanded.replace(/\D/g, "");
+  if (digitsOnly) return digitsOnly;
+  return expanded.replace(/\s+/g, "");
+}
+
+function puzzleAnswerMatches(puzzle, rawValue) {
+  const candidates = new Set();
+  const primary = puzzle.type === "cipher"
+    ? normalizeCipherAnswer(rawValue, puzzle)
+    : normalizePuzzleAnswer(rawValue, puzzle);
+  candidates.add(primary);
+
+  const alternates = puzzle.acceptAnswers || [];
+  alternates.forEach alt => {
+    candidates.add(
+      puzzle.type === "cipher"
+        ? normalizeCipherAnswer(alt, puzzle)
+        : normalizePuzzleAnswer(alt, puzzle)
+    );
+  });
+
+  const expected = puzzle.type === "cipher"
+    ? normalizeCipherAnswer(puzzle.answer, puzzle)
+    : normalizePuzzleAnswer(puzzle.answer, puzzle);
+
+  return candidates.has(expected);
+}
+
+function submitPuzzleAnswer() {
+  const puzzle = PUZZLE_DATA[activePuzzleId];
+  if (!puzzle) return;
+
+  const input = document.getElementById("puzzle-answer-input");
+
+  if (!puzzleAnswerMatches(puzzle, input.value)) {
+    document.getElementById("puzzle-error").classList.remove("hidden");
+    input.classList.add("puzzle-shake");
+    input.select();
+    setTimeout(() => input.classList.remove("puzzle-shake"), 500);
+    return;
+  }
+
+  markPuzzleSolved(puzzle);
+}
+
+function hidePuzzleOverlay() {
+  PuzzleEngine.unmount();
+  document.getElementById("puzzle-interactive").innerHTML = "";
+  document.getElementById("puzzle-overlay").classList.add("hidden");
+  activePuzzleId = null;
 }
 
 function triggerRaptorBreach() {
@@ -1378,10 +1569,10 @@ function revealDashboardDebug() {
   renderDebugMissionButtons();
 }
 
-function setupDevUnlock(triggerEl, key, storageKey, onUnlock) {
+function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true } = {}) {
   if (!triggerEl) return;
 
-  if (sessionStorage.getItem(storageKey) === "1") {
+  if (persist && sessionStorage.getItem(storageKey) === "1") {
     onUnlock();
     return;
   }
@@ -1392,7 +1583,7 @@ function setupDevUnlock(triggerEl, key, storageKey, onUnlock) {
     state.count += 1;
 
     if (state.count >= DEV_TAP_COUNT) {
-      sessionStorage.setItem(storageKey, "1");
+      if (persist) sessionStorage.setItem(storageKey, "1");
       state.count = 0;
       onUnlock();
       return;
@@ -1486,6 +1677,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     revealMenuSkip
   );
   setupDevUnlock(
+    document.getElementById("briefing-dev-trigger"),
+    "briefing",
+    DEV_MENU_KEY,
+    skipToDashboard,
+    { persist: false }
+  );
+  setupDevUnlock(
     document.getElementById("dashboard-dev-trigger"),
     "dashboard",
     DEV_DASHBOARD_KEY,
@@ -1499,6 +1697,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("dismiss-overlay").addEventListener("click", dismissEventOverlay);
   document.getElementById("finale-dismiss").addEventListener("click", hideFinaleOverlay);
+  document.getElementById("puzzle-submit").addEventListener("click", submitPuzzleAnswer);
+  document.getElementById("puzzle-dismiss").addEventListener("click", hidePuzzleOverlay);
+  document.getElementById("puzzle-answer-input").addEventListener("keydown", event => {
+    if (event.key === "Enter") submitPuzzleAnswer();
+  });
 
   await loadGameData();
   render();

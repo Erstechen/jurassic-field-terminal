@@ -1,0 +1,20 @@
+{
+  "id": "puzzle_02",
+  "type": "cipher",
+  "title": "Containment Lock Beta",
+  "subtitle": "ENCRYPTED OVERRIDE // PUZZLE TWO",
+  "intro": "Dr. Wu's backup lock channel was intercepted. The combination was encrypted before the network failed — decode the transmission to recover it.",
+  "puzzleBody": "DECRYPTION PROTOCOL\n━━━━━━━━━━━━━━━━━━━━\n• Wu used a shift cipher: every letter was moved forward in the alphabet to encrypt the message.\n• To decrypt, shift each letter backward by the same amount.\n• The shift key equals the horn count on the Sector B extraction specimen (check your mission log or field notes).\n• Write out the decoded message on paper — the lock combination is hidden inside it.\n• Enter only the four digits when you find them.",
+  "cipher": {
+    "ciphertext": "WKHORFNFRGHLVIRXUWZRILYHWZR",
+    "label": "INTERCEPTED TRANSMISSION // SHIFT ENCODED",
+    "showAlphabet": true
+  },
+  "answer": "4252",
+  "acceptAnswers": ["4252", "four two five two", "4 2 5 2", "4-2-5-2"],
+  "answerLabel": "ENTER LOCK COMBINATION (DIGITS)",
+  "lockCode": "4252",
+  "lockCodeLabel": "LOCK COMBINATION",
+  "requiredEmbryosMin": 0,
+  "solvedMessage": "Transmission decoded. Use this combination on Containment Lock Beta."
+}

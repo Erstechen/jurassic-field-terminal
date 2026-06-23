@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v39";
+const CACHE_NAME = "jp-cache-v44";
 
 const CORE_ASSETS = [
   "./",
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./styles.css",
   "./app.js",
   "./state.js",
+  "./puzzle-engine.js",
   "./qr-scanner.js",
   "./lib/jsQR.js",
   "./manifest.json",
@@ -14,6 +15,8 @@ const CORE_ASSETS = [
   "./data/audioLogs.json",
   "./data/briefing.json",
   "./qr/brachiosaurus.json",
+  "./qr/puzzle_lock_01.json",
+  "./qr/puzzle_lock_02.json",
   "./qr/raptor_breach.json",
   "./gm/index.html",
   "./gm/gm.js",
@@ -88,12 +91,17 @@ const MISSION_IMAGES = [
   "./mission_images/mission_10.png"
 ];
 
+const PUZZLE_ASSETS = [
+  "./data/puzzles/puzzle_01.json",
+  "./data/puzzles/puzzle_02.json"
+];
+
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       await cache.addAll(CORE_ASSETS);
       await Promise.all(
-        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS, ...MENU_ASSETS, ...MISSION_IMAGES].map(url =>
+        [...DINO_DB_INFO, ...DINO_RECOVERY_IMAGES, ...AUDIO_ASSETS, ...MENU_ASSETS, ...MISSION_IMAGES, ...PUZZLE_ASSETS].map(url =>
           cache.add(url).catch(() => {})
         )
       );
