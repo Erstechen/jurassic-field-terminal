@@ -269,6 +269,14 @@
   <script src="state.js"></script>
   <script src="puzzle-engine.js"></script>
   <script src="lib/jsQR.js"></script>
+  <script>
+    (function () {
+      var lib = window.jsQR;
+      if (lib && typeof lib !== "function" && typeof lib.default === "function") {
+        window.jsQR = lib.default;
+      }
+    })();
+  </script>
   <script src="qr-scanner.js"></script>
   <script src="app.js"></script>
 </body>
