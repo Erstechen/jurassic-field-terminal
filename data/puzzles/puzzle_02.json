@@ -3,10 +3,10 @@
   "type": "cipher",
   "title": "Containment Lock Beta",
   "subtitle": "ENCRYPTED OVERRIDE // PUZZLE TWO",
-  "intro": "Dr. Wu's backup lock channel was intercepted. The combination was encrypted before the network failed — decode the transmission to recover it.",
-  "puzzleBody": "DECRYPTION PROTOCOL\n━━━━━━━━━━━━━━━━━━━━\n• Wu used a shift cipher: every letter was moved forward in the alphabet to encrypt the message.\n• To decrypt, shift each letter backward by the same amount.\n• The shift key equals the horn count on the Sector B extraction specimen (check your mission log or field notes).\n• Write out the decoded message on paper — the lock combination is hidden inside it.\n• Enter only the four digits when you find them.",
+  "intro": "Dr. Wu's backup lock channel was intercepted. The transmission references raptor containment — decode it before the network fails completely.",
+  "puzzleBody": "DECRYPTION PROTOCOL\n━━━━━━━━━━━━━━━━━━━━\n• Wu used a shift cipher: every letter was moved forward in the alphabet to encrypt the message.\n• To decrypt, shift each letter backward by the same amount.\n• The shift key equals how many raptors hunted the kids in the Jurassic Park kitchen scene.\n• Write out the decoded message on paper — the lock combination is hidden inside it.\n• Enter only the four digits when you find them.",
   "cipher": {
-    "ciphertext": "WKHORFNFRGHLVIRXUWZRILYHWZR",
+    "ciphertext": "VJGNQEMEQFGKUHQWTVYQHKXGVYQ",
     "label": "INTERCEPTED TRANSMISSION // SHIFT ENCODED",
     "showAlphabet": true
   },
