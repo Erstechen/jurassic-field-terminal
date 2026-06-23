@@ -443,15 +443,19 @@ const BRIEFING_TEXT_END_LEAD_MS = 1500;
 const BRIEFING_FALLBACK_PARA_MS = 5000;
 
 function onPlay() {
-  warmUpAudio().catch(() => {});
+  try {
+    warmUpAudio().catch(() => {});
 
-  // Returning players who already accepted skip straight into the boot sequence.
-  if (GAME_STATE.flags.briefingComplete) {
-    startGame();
-    return;
+    // Returning players who already accepted skip straight into the boot sequence.
+    if (GAME_STATE.flags.briefingComplete) {
+      startGame();
+      return;
+    }
+
+    startBriefing();
+  } catch (err) {
+    console.error("PLAY failed:", err);
   }
-
-  startBriefing();
 }
 
 function startBriefing() {
@@ -1572,9 +1576,13 @@ function revealDashboardDebug() {
 function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true } = {}) {
   if (!triggerEl) return;
 
-  if (persist && sessionStorage.getItem(storageKey) === "1") {
-    onUnlock();
-    return;
+  try {
+    if (persist && sessionStorage.getItem(storageKey) === "1") {
+      onUnlock();
+      return;
+    }
+  } catch (err) {
+    console.warn("Dev unlock storage unavailable:", err);
   }
 
   triggerEl.addEventListener("click", () => {
@@ -1583,7 +1591,13 @@ function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true }
     state.count += 1;
 
     if (state.count >= DEV_TAP_COUNT) {
-      if (persist) sessionStorage.setItem(storageKey, "1");
+      if (persist) {
+        try {
+          sessionStorage.setItem(storageKey, "1");
+        } catch (err) {
+          console.warn("Dev unlock storage unavailable:", err);
+        }
+      }
       state.count = 0;
       onUnlock();
       return;
@@ -1593,6 +1607,112 @@ function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true }
       state.count = 0;
     }, DEV_TAP_WINDOW_MS);
   });
+}
+
+function shouldUseServiceWorker() {
+  const host = location.hostname;
+  if (location.protocol === "file:") return false;
+  if (host === "localhost" || host === "127.0.0.1" || host === "[::1]") return false;
+  if (/^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) {
+    return false;
+  }
+  if (host.endsWith(".local")) return false;
+  return true;
+}
+
+function initApp() {
+  const playBtn = document.getElementById("play-btn");
+  if (playBtn) {
+    playBtn.addEventListener("pointerdown", () => {
+      warmUpAudio().catch(() => {});
+    }, { once: true });
+    playBtn.addEventListener("click", onPlay);
+  } else {
+    console.error("Missing #play-btn — stale cache or incomplete index.html");
+  }
+
+  const acceptBtn = document.getElementById("accept-btn");
+  if (acceptBtn) acceptBtn.addEventListener("click", acceptMission);
+
+  const skipBtn = document.getElementById("skip-btn");
+  if (skipBtn) skipBtn.addEventListener("click", skipToDashboard);
+
+  setupDevUnlock(
+    document.getElementById("menu-dev-trigger"),
+    "menu",
+    DEV_MENU_KEY,
+    revealMenuSkip
+  );
+  setupDevUnlock(
+    document.getElementById("briefing-dev-trigger"),
+    "briefing",
+    DEV_MENU_KEY,
+    skipToDashboard,
+    { persist: false }
+  );
+  setupDevUnlock(
+    document.getElementById("dashboard-dev-trigger"),
+    "dashboard",
+    DEV_DASHBOARD_KEY,
+    revealDashboardDebug
+  );
+  setupButtonSounds();
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => showScreen(btn.dataset.screen));
+  });
+
+  const dismissOverlay = document.getElementById("dismiss-overlay");
+  if (dismissOverlay) dismissOverlay.addEventListener("click", dismissEventOverlay);
+
+  const finaleDismiss = document.getElementById("finale-dismiss");
+  if (finaleDismiss) finaleDismiss.addEventListener("click", hideFinaleOverlay);
+
+  const puzzleSubmit = document.getElementById("puzzle-submit");
+  if (puzzleSubmit) puzzleSubmit.addEventListener("click", submitPuzzleAnswer);
+
+  const puzzleDismiss = document.getElementById("puzzle-dismiss");
+  if (puzzleDismiss) puzzleDismiss.addEventListener("click", hidePuzzleOverlay);
+
+  const puzzleInput = document.getElementById("puzzle-answer-input");
+  if (puzzleInput) {
+    puzzleInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") submitPuzzleAnswer();
+    });
+  }
+}
+
+async function bootApp() {
+  initAudioSystem().catch(() => {});
+
+  try {
+    initApp();
+  } catch (err) {
+    console.error("App init failed:", err);
+  }
+
+  await loadGameData();
+  render();
+
+  if (GAME_STATE.extractionDeadline) {
+    startExtractionCountdown();
+  } else if (GAME_STATE.flags.finalEventTriggered) {
+    // Reloaded during the finale audio before the window began — re-arm it.
+    showExtractionFinale();
+  }
+
+  if ("serviceWorker" in navigator) {
+    if (shouldUseServiceWorker()) {
+      navigator.serviceWorker.register("./sw.js").catch(err => {
+        console.warn("Service worker registration failed:", err);
+      });
+    } else {
+      // Avoid stale offline cache breaking local testing.
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => reg.unregister());
+      }).catch(() => {});
+    }
+  }
 }
 
 function renderDebugMissionButtons() {
@@ -1661,94 +1781,9 @@ window.addEventListener("storage", event => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", async () => {
-  initAudioSystem().catch(() => {});
-
-  const playBtn = document.getElementById("play-btn");
-  if (playBtn) {
-    playBtn.addEventListener("pointerdown", () => {
-      warmUpAudio().catch(() => {});
-    }, { once: true });
-    playBtn.addEventListener("click", onPlay);
-  } else {
-    console.error("Missing #play-btn — stale cache or incomplete index.html");
-  }
-
-  const acceptBtn = document.getElementById("accept-btn");
-  if (acceptBtn) acceptBtn.addEventListener("click", acceptMission);
-
-  const skipBtn = document.getElementById("skip-btn");
-  if (skipBtn) skipBtn.addEventListener("click", skipToDashboard);
-
-  setupDevUnlock(
-    document.getElementById("menu-dev-trigger"),
-    "menu",
-    DEV_MENU_KEY,
-    revealMenuSkip
-  );
-  setupDevUnlock(
-    document.getElementById("briefing-dev-trigger"),
-    "briefing",
-    DEV_MENU_KEY,
-    skipToDashboard,
-    { persist: false }
-  );
-  setupDevUnlock(
-    document.getElementById("dashboard-dev-trigger"),
-    "dashboard",
-    DEV_DASHBOARD_KEY,
-    revealDashboardDebug
-  );
-  setupButtonSounds();
-
-  document.querySelectorAll(".nav-btn").forEach(btn => {
-    btn.addEventListener("click", () => showScreen(btn.dataset.screen));
-  });
-
-  const dismissOverlay = document.getElementById("dismiss-overlay");
-  if (dismissOverlay) dismissOverlay.addEventListener("click", dismissEventOverlay);
-
-  const finaleDismiss = document.getElementById("finale-dismiss");
-  if (finaleDismiss) finaleDismiss.addEventListener("click", hideFinaleOverlay);
-
-  const puzzleSubmit = document.getElementById("puzzle-submit");
-  if (puzzleSubmit) puzzleSubmit.addEventListener("click", submitPuzzleAnswer);
-
-  const puzzleDismiss = document.getElementById("puzzle-dismiss");
-  if (puzzleDismiss) puzzleDismiss.addEventListener("click", hidePuzzleOverlay);
-
-  const puzzleInput = document.getElementById("puzzle-answer-input");
-  if (puzzleInput) {
-    puzzleInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") submitPuzzleAnswer();
-    });
-  }
-
-  await loadGameData();
-  render();
-
-  if (GAME_STATE.extractionDeadline) {
-    startExtractionCountdown();
-  } else if (GAME_STATE.flags.finalEventTriggered) {
-    // Reloaded during the finale audio before the window began — re-arm it.
-    showExtractionFinale();
-  }
-
-  const isLocalDev =
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.hostname === "[::1]";
-
-  if ("serviceWorker" in navigator) {
-    if (isLocalDev) {
-      // Avoid stale offline cache breaking local testing.
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        regs.forEach(reg => reg.unregister());
-      }).catch(() => {});
-    } else {
-      navigator.serviceWorker.register("./sw.js").catch(err => {
-        console.warn("Service worker registration failed:", err);
-      });
-    }
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  bootApp().catch(err => console.error("Boot failed:", err));
 });
+
+window.onPlay = onPlay;
+window.skipToDashboard = skipToDashboard;

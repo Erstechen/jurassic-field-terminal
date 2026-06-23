@@ -38,13 +38,13 @@ const defaultState = {
 
 function migrateState(raw) {
   if (!raw || typeof raw !== "object") {
-    return structuredClone(defaultState);
+    return cloneState(defaultState);
   }
 
   if (raw.player && raw.embryos && raw.missions) {
-    const merged = { ...structuredClone(defaultState), ...raw };
+    const merged = { ...cloneState(defaultState), ...raw };
     const legacyIdMap = { trex: "tyrannosaurus", triceratops: "ceratosaurus" };
-    const embryos = structuredClone(defaultState.embryos);
+    const embryos = cloneState(defaultState.embryos);
     const collected = [];
 
     Object.entries(raw.embryos || {}).forEach(([id, status]) => {
@@ -57,11 +57,11 @@ function migrateState(raw) {
 
     merged.embryos = embryos;
     merged.player.embryosCollected = [...new Set(collected)];
-    merged.puzzles = { ...structuredClone(defaultState.puzzles), ...(raw.puzzles || {}) };
+    merged.puzzles = { ...cloneState(defaultState.puzzles), ...(raw.puzzles || {}) };
     return merged;
   }
 
-  const migrated = structuredClone(defaultState);
+  const migrated = cloneState(defaultState);
 
   if (Array.isArray(raw.collected)) {
     raw.collected.forEach(id => {
@@ -82,10 +82,10 @@ function migrateState(raw) {
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? migrateState(JSON.parse(saved)) : structuredClone(defaultState);
+    return saved ? migrateState(JSON.parse(saved)) : cloneState(defaultState);
   } catch (err) {
     console.warn("Failed to load state, resetting:", err);
-    return structuredClone(defaultState);
+    return cloneState(defaultState);
   }
 }
 
@@ -95,9 +95,16 @@ function saveState(state) {
 }
 
 function resetState() {
-  const fresh = structuredClone(defaultState);
+  const fresh = cloneState(defaultState);
   saveState(fresh);
   return fresh;
+}
+
+function cloneState(value) {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
 }
 
 let GAME_STATE = loadState();

@@ -142,11 +142,18 @@ body {
   padding: 0;
   text-align: center;
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
 }
 
-/* Background image layer (images/menu_bg.jpg) with a translucent dark-green
-   wash on top to fade the photo's brightness. Adjust the rgba alpha values
-   below to make the green tint stronger (closer to 1) or lighter (closer to 0). */
+/* Decorative menu layers must never intercept clicks. */
+.menu-bg,
+.menu-vignette,
+.menu-screen > .scanlines,
+.menu-screen > .frame-corner {
+  pointer-events: none;
+}
+
 .menu-bg {
   position: fixed;
   inset: 0;
@@ -178,7 +185,8 @@ body {
 
 .menu-content {
   position: relative;
-  z-index: 2;
+  z-index: 10;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -271,11 +279,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 8px;
   margin: 0;
   border: none;
   background: transparent;
-  cursor: default;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
   -webkit-tap-highlight-color: transparent;
 }
 
