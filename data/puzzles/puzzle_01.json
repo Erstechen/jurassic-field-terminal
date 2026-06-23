@@ -1,8 +1,10 @@
 {
   "id": "puzzle_01",
   "type": "slide",
-  "title": "Containment Lock Alpha",
-  "puzzleBody": "Slide tiles 1–8 into order.",
+  "title": "Containment Lock",
+  "subtitle": "CRYO SPECIMEN SEQUENCER",
+  "intro": "The cryo sequencer scrambled during evacuation. Restore the specimen sequence to release the lock code.",
+  "puzzleBody": "Tap a tile next to the empty slot to slide it. Arrange tiles 1 through 8 in order — left to right, top to bottom.",
   "interactive": {
     "columns": 3,
     "tileLabels": ["1", "2", "3", "4", "5", "6", "7", "8"],
@@ -12,5 +14,5 @@
   "lockCode": "4723",
   "lockCodeLabel": "LOCK COMBINATION",
   "requiredEmbryosMin": 0,
-  "solvedMessage": "Use this code on the lock."
+  "solvedMessage": "Sequencer restored. Use this combination on Containment Lock."
 }

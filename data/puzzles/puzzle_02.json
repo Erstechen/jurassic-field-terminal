@@ -1,18 +1,20 @@
 {
   "id": "puzzle_02",
   "type": "cipher",
-  "title": "Containment Lock Beta",
-  "puzzleBody": "Shift each letter backward. Key = raptors in the Jurassic Park kitchen scene. Enter the four digits from the decoded message.",
+  "title": "Containment Lock",
+  "subtitle": "SHIFT CIPHER OVERRIDE",
+  "intro": "An encrypted transmission was intercepted on the raptor containment channel. Decode it to recover the lock code.",
+  "puzzleBody": "Shift cipher — move each letter backward in the alphabet by the same amount.\nShift key: how many raptors were in the Jurassic Park kitchen scene?\nWrite out the decoded message on paper, then enter the four-digit lock code below.",
   "cipher": {
     "ciphertext": "VJGNQEMEQFGKUHQWTVYQHKXGVYQ",
-    "label": "ENCRYPTED MESSAGE",
+    "label": "INTERCEPTED TRANSMISSION",
     "showAlphabet": true
   },
   "answer": "4252",
   "acceptAnswers": ["4252", "four two five two", "4 2 5 2", "4-2-5-2"],
-  "answerLabel": "LOCK CODE",
+  "answerLabel": "ENTER LOCK CODE (4 DIGITS)",
   "lockCode": "4252",
   "lockCodeLabel": "LOCK COMBINATION",
   "requiredEmbryosMin": 0,
-  "solvedMessage": "Use this code on the lock."
+  "solvedMessage": "Transmission decoded. Use this combination on Containment Lock."
 }
