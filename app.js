@@ -1272,7 +1272,7 @@ function puzzleAnswerMatches(puzzle, rawValue) {
   candidates.add(primary);
 
   const alternates = puzzle.acceptAnswers || [];
-  alternates.forEach alt => {
+  alternates.forEach(alt => {
     candidates.add(
       puzzle.type === "cipher"
         ? normalizeCipherAnswer(alt, puzzle)
