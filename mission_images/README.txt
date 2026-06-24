@@ -16,9 +16,10 @@ Expected filenames (referenced in data/missions.json):
   mission_08.png  -> Giant Recovery (Giganotosaurus)
   mission_09.png  -> Pack Hunt Extraction (Velociraptor)
   mission_10.png  -> Final Specimen (Mutadon)
+  mission_11.png  -> Cryo Extraction (where to go for final pickup)
 
 Notes:
-- mission_11 (Cryo Extraction Complete) has no clue image (image: null).
+- mission_11 appears when all embryos are recovered and the extraction window opens.
 - To use a different filename or extension (e.g. .png), update the matching
   "image" path in data/missions.json.
 - If an image file is missing, the app simply omits it (no broken image).

@@ -130,6 +130,7 @@
           <div class="debug-panel-label">Debug / Simulation</div>
           <div id="debug-mission-buttons" class="debug-mission-buttons"></div>
           <div id="debug-puzzle-buttons" class="debug-mission-buttons"></div>
+          <div id="debug-extraction-tools" class="debug-mission-buttons"></div>
           <button class="danger" onclick="resetGame()">RESET STATE</button>
         </div>
       </section>
@@ -222,9 +223,12 @@
       </div>
 
       <p id="finale-message" class="finale-message">
-        Move now, Field Agent. Transport the Barbasol containment unit to the marked
-        extraction point before the window closes. Do not stop. Keep the specimens in sight.
+        Follow the extraction coordinates below. Scan the beacon QR code when you reach the extraction point.
       </p>
+
+      <div id="finale-clue-wrap" class="finale-clue-wrap hidden">
+        <img id="finale-clue-image" class="finale-clue-image" alt="Extraction point clue" />
+      </div>
 
       <div id="finale-roster" class="finale-roster"></div>
 

@@ -25,4 +25,7 @@ Lock puzzle codes (open in-app puzzle, reveal padlock combination on solve):
   puzzle_lock_01.json  -> data/puzzles/puzzle_01.json
   puzzle_lock_02.json  -> data/puzzles/puzzle_02.json
 
+Finale code (scan at the physical extraction point after all embryos recovered):
+  extraction_complete.json
+
 Tip: Use minified single-line JSON when generating QRs to keep codes smaller and easier to scan.

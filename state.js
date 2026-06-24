@@ -27,6 +27,7 @@ const defaultState = {
   },
   flags: {
     finalEventTriggered: false,
+    extractionComplete: false,
     briefingComplete: false
   },
   puzzles: {
@@ -58,6 +59,10 @@ function migrateState(raw) {
     merged.embryos = embryos;
     merged.player.embryosCollected = [...new Set(collected)];
     merged.puzzles = { ...cloneState(defaultState.puzzles), ...(raw.puzzles || {}) };
+    merged.flags = { ...cloneState(defaultState).flags, ...(raw.flags || {}) };
+    if (merged.flags.finalEventTriggered && !merged.flags.extractionComplete) {
+      merged.missions.mission_11 = "active";
+    }
     return merged;
   }
 

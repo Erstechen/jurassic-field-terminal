@@ -1363,6 +1363,24 @@ button.danger {
   line-height: 1.5;
 }
 
+.finale-clue-wrap {
+  margin: 0 0 16px;
+  width: 100%;
+}
+
+.finale-clue-image {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border: 1px solid #333;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+}
+
+.finale-clue-wrap.hidden {
+  display: none;
+}
+
 /* Persistent extraction window display (shown beneath the Field Scanner) */
 .extraction-banner {
   display: flex;

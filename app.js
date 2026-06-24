@@ -262,11 +262,22 @@ function resetInitTargets() {
 }
 
 function buildFieldAnalysisHtml(mission) {
-  if (!mission?.embryo || !mission.fieldAnalysis) return "";
+  if (!mission?.fieldAnalysis) return "";
+
+  const { observation, searchHint } = mission.fieldAnalysis;
+
+  if (!mission.embryo) {
+    return `
+    <div class="field-analysis field-analysis-extraction">
+      <div class="field-analysis-alert">EXTRACTION ORDER RECEIVED</div>
+      <div class="field-analysis-heading">FIELD BRIEFING:</div>
+      <p class="field-analysis-observation">${escapeHtml(observation)}</p>
+      <p class="field-analysis-search">${escapeHtml(searchHint)}</p>
+    </div>`;
+  }
 
   const embryo = EMBRYO_DATA[mission.embryo];
   const speciesName = (embryo?.name || mission.embryo).toUpperCase();
-  const { observation, searchHint } = mission.fieldAnalysis;
 
   return `
     <div class="field-analysis">
@@ -282,6 +293,17 @@ function buildFieldAnalysisHtml(mission) {
 }
 
 function buildDashboardMissionHtml(mission) {
+  if (GAME_STATE.flags.extractionComplete) {
+    return `
+      <div class="dashboard-mission mission-item status-complete">
+        <div class="mission-item-head">
+          <strong class="mission-title">Extraction confirmed.</strong>
+          <span class="badge">COMPLETE</span>
+        </div>
+        <p class="mission-desc">InGen transport recovered all specimens. Mission complete.</p>
+      </div>`;
+  }
+
   if (!mission) {
     return `
       <div class="dashboard-mission mission-item status-complete">
@@ -825,6 +847,30 @@ function renderDashboard() {
   document.getElementById("dashboard-title").textContent = "FIELD OPERATIONS DASHBOARD";
   document.getElementById("status").textContent =
     `EMBRYOS: ${GAME_STATE.player.embryosCollected.length}/10`;
+  updateScannerPrompt();
+  updateExtractionBannerVisibility();
+}
+
+function updateScannerPrompt() {
+  const el = document.querySelector(".scanner-prompt");
+  if (!el) return;
+
+  if (GAME_STATE.flags.extractionComplete) {
+    el.textContent = "Mission complete. Extraction confirmed.";
+  } else if (GAME_STATE.flags.finalEventTriggered) {
+    el.textContent = "Proceed to the extraction point and scan the extraction beacon QR code.";
+  } else {
+    el.textContent = "Scan mission QR codes to recover specimens.";
+  }
+}
+
+function updateExtractionBannerVisibility() {
+  const banner = document.getElementById("extraction-banner");
+  if (!banner) return;
+
+  if (GAME_STATE.flags.extractionComplete || !GAME_STATE.extractionDeadline) {
+    banner.classList.add("hidden");
+  }
 }
 
 function renderMissionView() {
@@ -1113,6 +1159,35 @@ function unlockMission(id) {
   console.log("Mission unlocked:", id);
 }
 
+function handleExtractionComplete() {
+  if (GAME_STATE.flags.extractionComplete) {
+    showEventOverlay("ALREADY EXTRACTED", "Extraction protocol already confirmed.");
+    return;
+  }
+
+  if (!GAME_STATE.flags.finalEventTriggered) {
+    showEventOverlay(
+      "PREMATURE",
+      "Extraction coordinates not yet issued. Recover all embryos first."
+    );
+    return;
+  }
+
+  GAME_STATE.flags.extractionComplete = true;
+  if (GAME_STATE.missions.mission_11 !== undefined) {
+    GAME_STATE.missions.mission_11 = "complete";
+  }
+
+  stopExtractionCountdown();
+  playSfx("button");
+
+  showEventOverlay(
+    "EXTRACTION CONFIRMED",
+    "InGen transport reached the extraction point. All specimens secured. Mission complete.",
+    { variant: "success", image: "./images/icon-512.png" }
+  );
+}
+
 function handleEvent(payload) {
   if (payload.eventId === "raptor_breach") {
     triggerRaptorBreach();
@@ -1132,6 +1207,11 @@ function handleEvent(payload) {
       "PERIMETER ALARM",
       "Perimeter breach detected. Motion tracker engaged — verify containment and proceed with caution."
     );
+    return;
+  }
+
+  if (payload.eventId === "extraction_complete") {
+    handleExtractionComplete();
     return;
   }
 
@@ -1394,12 +1474,12 @@ function showExtractionFinale() {
   GAME_STATE.flags.finalEventTriggered = true;
 
   Object.keys(GAME_STATE.missions).forEach(missionId => {
-    if (GAME_STATE.missions[missionId] === "active") {
+    if (GAME_STATE.missions[missionId] === "active" && missionId !== "mission_11") {
       GAME_STATE.missions[missionId] = "complete";
     }
   });
-  if (GAME_STATE.missions.mission_11 !== undefined) {
-    GAME_STATE.missions.mission_11 = "complete";
+  if (GAME_STATE.missions.mission_11 !== undefined && !GAME_STATE.flags.extractionComplete) {
+    GAME_STATE.missions.mission_11 = "active";
   }
 
   saveState(GAME_STATE);
@@ -1419,6 +1499,8 @@ function showExtractionFinale() {
       })
       .join("");
   }
+
+  setFinaleClueImage(MISSION_DATA.mission_11);
 
   document.getElementById("finale-overlay").classList.remove("hidden");
 
@@ -1445,6 +1527,22 @@ function revealAndStartCountdown() {
   const countdown = document.getElementById("finale-countdown");
   if (countdown) countdown.classList.remove("hidden");
   startExtractionCountdown();
+}
+
+function setFinaleClueImage(mission) {
+  const wrap = document.getElementById("finale-clue-wrap");
+  const img = document.getElementById("finale-clue-image");
+  if (!wrap || !img) return;
+
+  if (mission?.image) {
+    img.src = mission.image;
+    img.alt = `Extraction point clue: ${mission.title}`;
+    img.onerror = () => wrap.classList.add("hidden");
+    wrap.classList.remove("hidden");
+  } else {
+    img.removeAttribute("src");
+    wrap.classList.add("hidden");
+  }
 }
 
 // Plays a one-shot sound and invokes onComplete when it ends (or immediately if unavailable).
@@ -1486,6 +1584,8 @@ function getExtractionRemaining() {
 }
 
 function updateCountdownDisplays(remaining, expired) {
+  if (GAME_STATE.flags.extractionComplete) return;
+
   const text = formatCountdown(remaining);
   const banner = document.getElementById("extraction-banner");
   const targets = [
@@ -1579,6 +1679,57 @@ function revealDashboardDebug() {
   renderDebugPanel();
 }
 
+function hideDashboardDebug() {
+  document.getElementById("debug-tools")?.classList.add("hidden");
+}
+
+function isDashboardDebugVisible() {
+  const tools = document.getElementById("debug-tools");
+  return !!(tools && !tools.classList.contains("hidden"));
+}
+
+function setupDashboardDevUnlock(triggerEl) {
+  if (!triggerEl) return;
+
+  try {
+    if (sessionStorage.getItem(DEV_DASHBOARD_KEY) === "1") {
+      revealDashboardDebug();
+    }
+  } catch (err) {
+    console.warn("Dev unlock storage unavailable:", err);
+  }
+
+  triggerEl.addEventListener("click", () => {
+    if (isDashboardDebugUnlocked()) {
+      if (isDashboardDebugVisible()) {
+        hideDashboardDebug();
+      } else {
+        revealDashboardDebug();
+      }
+      return;
+    }
+
+    const state = devTapState.dashboard;
+    clearTimeout(state.timer);
+    state.count += 1;
+
+    if (state.count >= DEV_TAP_COUNT) {
+      try {
+        sessionStorage.setItem(DEV_DASHBOARD_KEY, "1");
+      } catch (err) {
+        console.warn("Dev unlock storage unavailable:", err);
+      }
+      state.count = 0;
+      revealDashboardDebug();
+      return;
+    }
+
+    state.timer = setTimeout(() => {
+      state.count = 0;
+    }, DEV_TAP_WINDOW_MS);
+  });
+}
+
 function setupDevUnlock(triggerEl, key, storageKey, onUnlock, { persist = true } = {}) {
   if (!triggerEl) return;
 
@@ -1656,12 +1807,7 @@ function initApp() {
     skipToDashboard,
     { persist: false }
   );
-  setupDevUnlock(
-    document.getElementById("dashboard-dev-trigger"),
-    "dashboard",
-    DEV_DASHBOARD_KEY,
-    revealDashboardDebug
-  );
+  setupDashboardDevUnlock(document.getElementById("dashboard-dev-trigger"));
   setupButtonSounds();
 
   document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -1724,6 +1870,7 @@ async function bootApp() {
 function renderDebugPanel() {
   renderDebugMissionButtons();
   renderDebugPuzzleButtons();
+  renderDebugExtractionButton();
 }
 
 function renderDebugMissionButtons() {
@@ -1772,6 +1919,27 @@ function renderDebugPuzzleButtons() {
 window.debugOpenPuzzle = function debugOpenPuzzle(id) {
   if (!isDashboardDebugUnlocked()) return;
   handlePuzzle(id);
+};
+
+function renderDebugExtractionButton() {
+  const container = document.getElementById("debug-extraction-tools");
+  if (!container || !isDashboardDebugUnlocked()) return;
+
+  if (GAME_STATE.flags.finalEventTriggered && !GAME_STATE.flags.extractionComplete) {
+    container.innerHTML = `
+      <button type="button"
+              class="debug-mission-btn"
+              onclick="debugConfirmExtraction()">SIMULATE EXTRACTION SCAN</button>`;
+  } else {
+    container.innerHTML = "";
+  }
+}
+
+window.debugConfirmExtraction = function debugConfirmExtraction() {
+  if (!isDashboardDebugUnlocked()) return;
+  handleExtractionComplete();
+  saveState(GAME_STATE);
+  render();
 };
 
 window.debugCompleteEmbryo = function debugCompleteEmbryo(id) {

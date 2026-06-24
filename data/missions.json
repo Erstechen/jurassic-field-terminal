@@ -131,11 +131,15 @@
   },
   "mission_11": {
     "id": "mission_11",
-    "title": "Cryo Extraction Complete",
-    "description": "All embryos recovered. Initiate final extraction protocol.",
-    "objective": "Proceed to extraction point for final event.",
+    "title": "Cryo Extraction",
+    "description": "All embryos secured. Proceed to the extraction point before the window closes.",
+    "objective": "Follow the extraction clue, then scan the extraction beacon QR code on arrival.",
     "embryo": null,
-    "image": null,
+    "image": "./mission_images/mission_11.png",
+    "fieldAnalysis": {
+      "observation": "Extraction coordinates locked. InGen transport is standing by.",
+      "searchHint": "Proceed to the location shown in the extraction clue image."
+    },
     "status": "locked"
   }
 }

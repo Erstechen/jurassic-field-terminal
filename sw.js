@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-cache-v55";
+const CACHE_NAME = "jp-cache-v56";
 
 const CORE_ASSETS = [
   "./",
@@ -17,6 +17,7 @@ const CORE_ASSETS = [
   "./qr/brachiosaurus.json",
   "./qr/puzzle_lock_01.json",
   "./qr/puzzle_lock_02.json",
+  "./qr/extraction_complete.json",
   "./qr/raptor_breach.json",
   "./gm/index.html",
   "./gm/gm.js",
@@ -88,7 +89,8 @@ const MISSION_IMAGES = [
   "./mission_images/mission_07.png",
   "./mission_images/mission_08.png",
   "./mission_images/mission_09.png",
-  "./mission_images/mission_10.png"
+  "./mission_images/mission_10.png",
+  "./mission_images/mission_11.png"
 ];
 
 const PUZZLE_ASSETS = [
